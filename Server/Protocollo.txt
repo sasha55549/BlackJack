@@ -1,0 +1,29 @@
+Protocollo:
+	id giocatore + 
+	(100-110 connessione) (200-215 azioni partita) (300-310 debug) (400-410 errori) +
+	contenuto* +
+
+
+	100 Connessione accettata, (server)
+	101 connessione sospesa, (server)
+	102 partita iniziata + playerId, (server)
+	103 connessione rifiutata, (server)
+	104 reindirizzamento, (server)
+
+	200 setup partita + playerId + puntata(client), (server)
+	201 inizio partita + playerId + carte(server), (client/server)
+	202 inizio turno + playerId, (server)
+	203 hit + playerId + carta(vuota richiesta, piena risposta), (client/server)
+	204 stai + playerId
+	205 raddoppio + playerId + carta(server)
+	206 split + playerId + carta(server)
+	207 assicurazione + playerId + valore
+	208 fine turno + playerId
+	209 fine partita + playerId + status + importo*
+	210 carte dealer + playerId + carte
+
+	300-310 admin debug(reserved)
+
+	400 messaggio non valido
+	401 balance issue
+	402 operazione non consentita
