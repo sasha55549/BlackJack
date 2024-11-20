@@ -1,9 +1,10 @@
+package controllers;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Partita {
+public class PartitaController {
 
-    public Partita(ArrayList<Socket> clients) {
+    public PartitaController(ArrayList<Socket> clients) {
         //TODO Auto-generated constructor stub
     }
     

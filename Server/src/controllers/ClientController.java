@@ -1,20 +1,21 @@
+package controllers;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ClientHandler {
+public class ClientController {
     private ArrayList<Socket> clients = new ArrayList<>();
 
-    public ClientHandler() {
+    public ClientController() {
         
     }
 
-    public ClientHandler(Socket socket) {
+    public ClientController(Socket socket) {
         clients.add(socket);
     }
     public boolean startGame() {
         if(clients.size()>2) {
             System.out.println("Game starting");
-            new Partita(clients);
+            new PartitaController(clients);
             return true;
         }
         return false;

@@ -1,11 +1,12 @@
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import controllers.ClientController;
 
 
 public class Server {
     public static final int PORT = 50000;
-    private ClientHandler handler;
+    private ClientController clientController;
     public static void main(String[] args) {
         ServerSocket serverSocket;
         try {
@@ -16,13 +17,13 @@ public class Server {
                 System.out.println("Connection accepted by " + serverSocket.getInetAddress().toString());
 
                 Server server = new Server();
-                if(server.getHandler()!=null) {
-                    server.getHandler().addClient(socket);
+                if(server.getClientController()!=null) {
+                    server.getClientController().addClient(socket);
                 }
                 else {
-                    server.setHandler(new ClientHandler());
+                    server.setHandler(new ClientController());
                 }
-                if(!server.getHandler().startGame()) {
+                if(!server.getClientController().startGame()) {
                     System.out.println("Waiting for players to join the game");
                 }
             }
@@ -30,10 +31,10 @@ public class Server {
             e.printStackTrace(System.err);
         }
     }
-    public ClientHandler getHandler() {
-        return handler;
+    public ClientController getClientController() {
+        return clientController;
     }
-    public void setHandler(ClientHandler handler) {
-        this.handler = handler;
+    public void setHandler(ClientController clientController) {
+        this.clientController = clientController;
     }
 }
