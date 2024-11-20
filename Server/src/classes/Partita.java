@@ -17,7 +17,7 @@ public class Partita extends Thread {
         }
     }
 
-    public void generaMazzo(){
+    private void generaMazzo(){
         for (int i=0;i<6;i++){
             for (String valore : Carta.VALORI) {
                 for (String seme : Carta.SEMI) {
@@ -27,13 +27,13 @@ public class Partita extends Thread {
         }
     }
 
-    public void mischiaMazzo(){
+    private void mischiaMazzo(){
         for (int i=0;i<3;i++){
             Collections.shuffle(mazzo);
         }
     }
 
-    public boolean allPlayersStayed(){
+    private boolean allPlayersStayed(){
         boolean allPlayersStayed = true;
         for (Giocatore giocatore : this.giocatori) {
             if (!giocatore.isStayed()) {
@@ -44,10 +44,20 @@ public class Partita extends Thread {
         return allPlayersStayed;
     }
 
+    //TODO
+    private boolean turno(){
+
+    }
+
     @Override
     public void run(){
-
-        allPlayersStayed();
+        generaMazzo();
+        mischiaMazzo();
+        while (!allPlayersStayed()) {
+            for (Giocatore giocatore : giocatori) {
+                if (giocatore.isStayed()) continue;
+            }
+        }
     }
     
 }
