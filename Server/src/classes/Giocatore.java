@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class Giocatore {
     protected String playerId;
-    private double bilancio;
-    private int puntata;
+    protected double bilancio;
+    protected int puntata;
     protected ArrayList<Carta> mano;
     protected Socket playerSocket;
     protected boolean stayed;
