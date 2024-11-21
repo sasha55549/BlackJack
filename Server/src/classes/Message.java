@@ -7,6 +7,7 @@ public class Message implements Serializable{
     private int statusCode;
     private String message;
     private Object oggetto;
+    private String method;
 
     public Message() {
 
@@ -20,6 +21,15 @@ public class Message implements Serializable{
         this.oggetto = oggetto;
     }
 
+    public Message(String method){
+        this.method = method;
+    }
+
+    public Message(String method, Object oggetto){
+        this.method = method;
+        this.oggetto = oggetto;
+    }
+
     public int getStatusCode() {
         return this.statusCode;
     }
@@ -30,6 +40,10 @@ public class Message implements Serializable{
 
     public Object getOggetto() {
         return this.oggetto;
+    }
+
+    public String getMethod(){
+        return this.method;
     }
 
     public String toString() {
