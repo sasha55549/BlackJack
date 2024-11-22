@@ -27,6 +27,7 @@ Protocollo:
 	400 messaggio non valido
 	401 balance issue
 	402 operazione non consentita
+	404 errore
 
 Richiesta: (Metodo, player_id, contenuto*)
 
@@ -51,3 +52,5 @@ Response_code:
 	(104: reindirizzamento partita)
 
 	200: ok
+
+	404: errore
