@@ -5,13 +5,12 @@ import java.io.Serializable;
 public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
     private int statusCode;
-    private String message;
+    private String playerId;
     private Object oggetto;
     private String method;
     private String playerId;
 
     public Message() {
-
     }
 //Response
     public Message(int statusCode, String playerId, String message) {
@@ -20,6 +19,7 @@ public class Message implements Serializable{
     }
     public Message(int statusCode, String playerId, Object oggetto) {
         this.statusCode = statusCode;
+        this.playerId = playerId;
         this.oggetto = oggetto;
     }
 
@@ -37,10 +37,6 @@ public class Message implements Serializable{
         return this.statusCode;
     }
 
-    public String getMessage() {
-        return this.message;
-    }
-
     public Object getOggetto() {
         return this.oggetto;
     }
@@ -49,15 +45,29 @@ public class Message implements Serializable{
         return this.method;
     }
 
-    public String getPlayerId(){
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getPlayerId() {
         return this.playerId;
     }
 
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
+    public void setOggetto(Object oggetto) {
+        this.oggetto = oggetto;
+    }
+
+
+    @Override
     public String toString() {
         return "{" +
             " statusCode='" + getStatusCode() + "'" +
-            ", message='" + getMessage() + "'" +
+            ", playerId='" + getPlayerId() + "'" +
             ", oggetto='" + getOggetto() + "'" +
             "}";
     }
+    
 }

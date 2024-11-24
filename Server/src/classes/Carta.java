@@ -1,6 +1,10 @@
 package classes;
 
 public class Carta {
+
+    static final String[] VALORI = new String[]{"2","3","4","5","6","7","8","9","10","J","Q","K","A"};
+    static final String[] SEMI = new String[]{"F","Q","P","C"};
+
     private String valore;
     private String seme;
 

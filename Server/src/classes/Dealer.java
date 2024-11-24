@@ -1,8 +1,11 @@
 package classes;
 
+import java.util.ArrayList;
+
 public class Dealer extends Giocatore{
-    @Override
-    public double getBilancio() {
-        return Double.POSITIVE_INFINITY;
+
+    Dealer(String playerId, ArrayList<Carta> mano, boolean stayed){
+        super(playerId, Double.POSITIVE_INFINITY, 0, mano, null, stayed);
     }
+
 }
