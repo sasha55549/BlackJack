@@ -1,7 +1,6 @@
 package classes;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
@@ -20,10 +19,6 @@ public class Message implements Serializable{
 
     public int getStatusCode() {
         return this.statusCode;
-    }
-
-    public String getMessage() {
-        return this.message;
     }
 
     public Object getOggetto() {
@@ -45,11 +40,14 @@ public class Message implements Serializable{
         this.oggetto = oggetto;
     }
 
+
+    @Override
     public String toString() {
         return "{" +
             " statusCode='" + getStatusCode() + "'" +
-            ", message='" + getMessage() + "'" +
+            ", playerId='" + getPlayerId() + "'" +
             ", oggetto='" + getOggetto() + "'" +
             "}";
     }
+    
 }

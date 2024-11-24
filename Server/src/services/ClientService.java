@@ -22,16 +22,16 @@ public class ClientService {
             e.printStackTrace(System.err);
         }
     }
-    public void sendMessage(int statusCode, Object object) {
+    public void sendMessage(int statusCode, String playerId, Object object) {
         if(socket.isClosed()) {
             return;
         }
         Message message;
         if(object instanceof String) {
-            message = new Message(statusCode, String.valueOf(object));
+            message = new Message(statusCode, playerId, String.valueOf(object));
         }
         else {
-            message = new Message(statusCode, object);
+            message = new Message(statusCode, playerId, object);
         }
         try {
             out.writeObject(message);
