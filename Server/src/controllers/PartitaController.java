@@ -49,7 +49,7 @@ public class PartitaController extends Thread {
     }
 
     //TODO
-    private boolean turno(){
+    private boolean turno() {
         return false;
     }
 
