@@ -2,7 +2,7 @@ package classes;
 
 import java.io.Serializable;
 
-public class Message implements Serializable {
+public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
     private int statusCode;
     private String playerId;
@@ -31,6 +31,7 @@ public class Message implements Serializable {
         this.oggetto = oggetto;
     }
 
+    
     public int getStatusCode() {
         return this.statusCode;
     }

@@ -15,7 +15,7 @@ public class ClientController {
     public boolean startGame() {
         if(clients.size()>2) {
             System.out.println("Game starting");
-            new PartitaController(clients);
+            new PartitaController(clients).start();
             return true;
         }
         return false;
