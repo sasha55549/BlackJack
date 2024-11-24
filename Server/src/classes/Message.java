@@ -7,13 +7,29 @@ public class Message implements Serializable{
     private int statusCode;
     private String playerId;
     private Object oggetto;
+    private String method;
+    private String playerId;
 
     public Message() {
     }
-
+//Response
+    public Message(int statusCode, String playerId, String message) {
+        this.statusCode = statusCode;
+        this.message = message;
+    }
     public Message(int statusCode, String playerId, Object oggetto) {
         this.statusCode = statusCode;
         this.playerId = playerId;
+        this.oggetto = oggetto;
+    }
+
+//Request
+    public Message(String method){
+        this.method = method;
+    }
+
+    public Message(String method, String playerId, Object oggetto){
+        this.method = method;
         this.oggetto = oggetto;
     }
 
@@ -23,6 +39,10 @@ public class Message implements Serializable{
 
     public Object getOggetto() {
         return this.oggetto;
+    }
+
+    public String getMethod(){
+        return this.method;
     }
 
     public void setStatusCode(int statusCode) {

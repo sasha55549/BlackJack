@@ -27,3 +27,30 @@ Protocollo:
 	400 messaggio non valido
 	401 balance issue
 	402 operazione non consentita
+	404 errore
+
+Richiesta: (Metodo, player_id, contenuto*)
+
+Risposta: (Response_code, player_id, contenuto*)
+
+Metodi:
+	INIZIO: chiedo al server se si può iniziare la partita
+	TURNO: chiedo al server se è il mio turno
+
+	INIZIO_TURNO: invio la mia mano al server per farmi dare le carte -> contenuto: mano
+	HIT: invio una carta vuota al server per chiedere una carta -> contenuto: carta
+	STAI: invio al server una richiesta per stare
+	RADDOPPIO: 
+	SPLIT:
+	ASSICURAZIONE:
+
+
+Response_code:
+	100: connessione accettata e partita iniziata
+	101: connessione accettata, ma sospesa (bisogna aspettare l'altro giocatore)
+	103: connessione rifiutata
+	(104: reindirizzamento partita)
+
+	200: ok
+
+	404: errore
