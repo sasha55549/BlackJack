@@ -17,6 +17,7 @@ public class PartitaController extends Thread {
     static int playersNumber = 0;
 
     public PartitaController (ArrayList<Socket> sockets){
+        this.mazzo = new ArrayList<Carta>();
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
         for (Socket socket : sockets) {
@@ -54,7 +55,7 @@ public class PartitaController extends Thread {
 
     private void calcolaPunteggi(){
             for (Giocatore giocatore : giocatori) {
-                int p=0;
+                int p=0, assi=0;
                 for(int i=0;i<giocatore.getMano().size();i++){
                     String valore = giocatore.getMano().get(i).getValore();
                     switch (valore) {
@@ -68,12 +69,16 @@ public class PartitaController extends Thread {
                             p+=10;
                             break;
                         case "A":
-                            if (p+11<=21) p+=11;
-                            else p+=1;
+                            p+=11;
+                            assi++;
                             break;
                         default:
                             p+=Integer.parseInt(valore);
                             break;
+                    }
+                    while(p>21 && assi>0) {
+                        p-=10;
+                        assi--;
                     }
                     punteggi.put(giocatore.getPlayerId(), p);
                 }
@@ -81,6 +86,7 @@ public class PartitaController extends Thread {
             int dealerManoSize=dealer.getMano().size();
             if (!allPlayersStayed() && dealerManoSize==2) dealerManoSize-=1; //non fa vedere il punteggio inclusa la carta coperta
             int p=0;
+            int assi=0;
             for (int i=0;i<dealerManoSize;i++) {
                 String valore = dealer.getMano().get(i).getValore();
                     switch (valore) {
@@ -94,12 +100,16 @@ public class PartitaController extends Thread {
                             p+=10;
                             break;
                         case "A":
-                            if (p+11<=21) p+=11;
-                            else p+=1;
+                            p+=11;
+                            assi++;
                             break;
                         default:
                             p+=Integer.parseInt(valore);
                             break;
+                    }
+                    while(p>21 && assi>0) {
+                        p-=10;
+                        assi--;
                     }
                     punteggi.put(dealer.getPlayerId(), p);
             }
@@ -136,6 +146,10 @@ public class PartitaController extends Thread {
                 //Switch con varie azioni possibili - controllo la possibilita' di fare una determinata azione
                 //Ricalcolo punteggi e verifica vincita o perdita
             }
+        }
+        while (punteggi.get(dealer.getPlayerId())<17) {
+            dealer.hit(mazzo.removeFirst());
+            calcolaPunteggi();
         }
     }
     

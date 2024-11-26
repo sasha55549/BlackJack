@@ -21,7 +21,7 @@ public class Server {
                     server.getClientController().addClient(socket);
                 }
                 else {
-                    server.setHandler(new ClientController());
+                    server.setHandler(new ClientController(socket));
                 }
                 if(!server.getClientController().startGame()) {
                     System.out.println("Waiting for players to join the game");

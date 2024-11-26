@@ -13,7 +13,7 @@ public class ClientController {
         clients.add(socket);
     }
     public boolean startGame() {
-        if(clients.size()>2) {
+        if(clients.size()>=2) {
             System.out.println("Game starting");
             new PartitaController(clients).start();
             return true;
