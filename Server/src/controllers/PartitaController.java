@@ -8,12 +8,16 @@ import classes.Carta;
 import classes.Dealer;
 import classes.Giocatore;
 import classes.Mano;
+import classes.Message;
+import services.ClientCommunicationService;
+import services.ClientService;
 
 public class PartitaController extends Thread {
     private ArrayList<Giocatore> giocatori;
     private ArrayList<Carta> mazzo;
     private Dealer dealer;
     private HashMap<String,Integer> punteggi;
+    private HashMap<Giocatore,ClientCommunicationService> connections;
     static int playersNumber = 0;
 
     public PartitaController (ArrayList<Socket> sockets){
@@ -21,8 +25,16 @@ public class PartitaController extends Thread {
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
         for (Socket socket : sockets) {
-            this.giocatori.add(new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false));
+            Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
+            this.giocatori.add(giocatore);
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, giocatore));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
+        }
+    }
+
+    private void connessioni(){
+        for (Giocatore giocatore : connections.keySet()) {
+            connections.get(giocatore).start();
         }
     }
 
@@ -117,8 +129,8 @@ public class PartitaController extends Thread {
         }
 
     //TODO
-    private boolean turno() {
-        return false;
+    public synchronized Message turno(Message message) {
+        return null;
     }
 
     private void distribuisciCarte(){

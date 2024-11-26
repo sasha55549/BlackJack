@@ -2,20 +2,18 @@ package classes;
 
 import java.io.Serializable;
 
-public class Message implements Serializable{
+public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
     private int statusCode;
     private String playerId;
     private Object oggetto;
     private String method;
-    private String playerId;
 
     public Message() {
     }
 //Response
-    public Message(int statusCode, String playerId, String message) {
+    public Message(int statusCode, String playerId) {
         this.statusCode = statusCode;
-        this.message = message;
     }
     public Message(int statusCode, String playerId, Object oggetto) {
         this.statusCode = statusCode;
@@ -67,6 +65,7 @@ public class Message implements Serializable{
             " statusCode='" + getStatusCode() + "'" +
             ", playerId='" + getPlayerId() + "'" +
             ", oggetto='" + getOggetto() + "'" +
+            ", method='" + getMethod() + "'" +
             "}";
     }
     

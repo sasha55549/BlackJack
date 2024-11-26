@@ -7,8 +7,10 @@ import java.net.Socket;
 
 import classes.Giocatore;
 import classes.Message;
+import controllers.PartitaController;
 
-public class ClientCommunicationService implements Runnable{
+public class ClientCommunicationService extends Thread{
+    private PartitaController partita;
     private ClientService clientService;
     private Socket socket;
     private ObjectInputStream in;
@@ -19,8 +21,9 @@ public class ClientCommunicationService implements Runnable{
     public ClientCommunicationService() {
 
     }
-    public ClientCommunicationService(ClientService clientService , Socket socket, boolean turno, Giocatore giocatore) {
-        this.clientService = clientService;
+    public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, Giocatore giocatore) {
+        this.partita = partita;
+        this.clientService = new ClientService(socket);
         this.giocatore = giocatore;
         this.socket = socket;
         try {
@@ -34,16 +37,14 @@ public class ClientCommunicationService implements Runnable{
 
     @Override
     public void run() {
-        Object input = null;
         while (true) {
-            try {
-                input = in.readObject();
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-            if(input instanceof Message) {
-                input = (Message) input;
-                if(((Message)input).getMethod().equals("TURNO")) {
+                Message request = clientService.recieveMessage();
+                Message response = partita.turno(request);
+                clientService.sendMessage(response);
+
+
+                /*Spostare la logica nel metodo turno
+                if(input.getMethod().equals("TURNO")) {
                     if(turno) {
                         try {
                             out.writeObject(new Message(200, giocatore.getPlayerId()));
@@ -53,10 +54,11 @@ public class ClientCommunicationService implements Runnable{
                     }
                 } else if(((Message)input).getMethod().equals("INIZIO")) {
                     //TODO capire chi deve instanziare l'oggetto e come l'oggetto comunicherà con gli altri
-                }
-            }
+                } */
         }
     }
+
+    //Spostiamo la gestione del turno nella partita quindi eliminiamo
     public boolean getTurno() {
         return this.turno;
     }
