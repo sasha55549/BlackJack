@@ -37,12 +37,15 @@ Metodi:
 	INIZIO: chiedo al server se si può iniziare la partita
 	TURNO: chiedo al server se è il mio turno
 
-	INIZIO_TURNO: invio la mia mano al server per farmi dare le carte -> contenuto: mano
+	MANO: invio la mia mano al server per farmi dare le carte -> contenuto: mano
 	HIT: invio una carta vuota al server per chiedere una carta -> contenuto: carta
 	STAI: invio al server una richiesta per stare
 	RADDOPPIO: 
 	SPLIT:
 	ASSICURAZIONE:
+
+	FINE: chiedo al server se ho finito (ho sballato oppure mi sono fermato)
+	VITTORIA: chiedo al server se ho vinto
 
 
 Response_code:
@@ -52,5 +55,7 @@ Response_code:
 	(104: reindirizzamento partita)
 
 	200: ok
+	201: non finito
+	210: VITTORIA
 
-	404: errore
+	400: errore
