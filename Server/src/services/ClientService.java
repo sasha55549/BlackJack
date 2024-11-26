@@ -33,7 +33,7 @@ public class ClientService {
         }
     }
 
-    //TODO teoricamente eliminare il questo metodo e mettere la creazione dei messaggi all'interno delle classi
+    //TODO teoricamente eliminare questo metodo e mettere la creazione dei messaggi all'interno delle classi
     public void sendMessage(int statusCode, String playerId, Object object) {
         if(socket.isClosed()) {
             return;

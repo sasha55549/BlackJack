@@ -3,33 +3,45 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import classes.Carta;
 import classes.Dealer;
 import classes.Giocatore;
 import classes.Mano;
 import classes.Message;
+import classes.Stato;
 import services.ClientCommunicationService;
 import services.ClientService;
 
 public class PartitaController extends Thread {
     private ArrayList<Giocatore> giocatori;
+    private HashMap<String,Giocatore> giocatori2;
     private ArrayList<Carta> mazzo;
     private Dealer dealer;
     private HashMap<String,Integer> punteggi;
     private HashMap<Giocatore,ClientCommunicationService> connections;
+    private String currentPlayer;
+    private Iterator<Giocatore> i;
     static int playersNumber = 0;
 
     public PartitaController (ArrayList<Socket> sockets){
+        this.giocatori = new ArrayList<Giocatore>();
+        this.giocatori2 = new HashMap<String,Giocatore>();
+        this.punteggi = new HashMap<String,Integer>();
+        this.connections = new HashMap<Giocatore,ClientCommunicationService>();
         this.mazzo = new ArrayList<Carta>();
+
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
         for (Socket socket : sockets) {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
             this.giocatori.add(giocatore);
+            this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
             this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, giocatore));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
         }
+        this.i= giocatori.iterator();
     }
 
     private void connessioni(){
@@ -130,6 +142,51 @@ public class PartitaController extends Thread {
 
     //TODO
     public synchronized Message turno(Message message) {
+        String method = message.getMethod();
+        Giocatore giocatore = giocatori2.get(message.getPlayerId());
+        switch (method) {
+            case "TURNO":
+                if (message.getPlayerId().equalsIgnoreCase(currentPlayer)) {
+                    return new Message(200,message.getPlayerId());
+                }
+                else {
+                    return new Message(300, message.getPlayerId());
+                }
+            case "INIZIO":
+                //TODO gestire nel client controller
+                break;
+            case "STATO":
+                return new Message(200,message.getPlayerId(),new Stato(giocatori,dealer.getMano(),punteggi));
+            case "HIT":
+                if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21) {
+                    giocatore.hit(mazzo.removeFirst());
+                    calcolaPunteggi();
+                    if (punteggi.get(giocatore.getPlayerId())>=21) giocatore.stay(true);
+                    return new Message(200,giocatore.getPlayerId());
+                } //TODO continuo domani
+                break;
+            case "STAY":
+                
+                break;
+            case "DOUBLE":
+                
+                break;
+            case "SPLIT":
+                
+                break;
+            case "INSURANCE":
+                
+                break;
+            case "FINE":
+                
+                break;
+            case "VITTORIA":
+                
+                break;
+            default:
+            //TODO 404
+                break;
+        }
         return null;
     }
 
@@ -145,19 +202,15 @@ public class PartitaController extends Thread {
     }
     @Override
     public void run(){
+        //TODO realizzazione puntate
+        connessioni();
         generaMazzo();
         mischiaMazzo();
         distribuisciCarte();
         calcolaPunteggi();
+        currentPlayer=i.next().getPlayerId();
         while (!allPlayersStayed()) {
-            for (Giocatore giocatore : giocatori) {
-                if (giocatore.isStayed()) continue;
-                //ricevi richiesta se è il turno del giocatore
-                //rispondi SI, Azione
-                //Attesa ricezione azione del giocatore
-                //Switch con varie azioni possibili - controllo la possibilita' di fare una determinata azione
-                //Ricalcolo punteggi e verifica vincita o perdita
-            }
+           
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
             dealer.hit(mazzo.removeFirst());
