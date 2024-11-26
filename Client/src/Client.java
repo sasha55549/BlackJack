@@ -1,10 +1,15 @@
+
+import classes.*;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class Client {
     public static final int PORT = 50000;
     public static void main(String[] args) throws Exception {
-        InetAddress serverAddress = InetAddress().getByName("127.0.0.1");
+        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
         Socket socket = new Socket(serverAddress, PORT);
             
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
@@ -21,6 +26,7 @@ public class Client {
                 Thread.sleep(500);
             } catch(InterruptedException e){
                 e.printStackTrace();
+
             }
             out.writeObject(new Message("INIZIO"));
             risposta = (Message) in.readObject();
@@ -28,6 +34,7 @@ public class Client {
 
         if(risposta.getStatusCode() != 100)  //Controllo che la connessione sia stata accettata
             System.exit(0);   
+      
         String playerId = risposta.getPlayerId();
 
         Giocatore giocatore = new Giocatore();
@@ -44,6 +51,7 @@ public class Client {
             
             if(risposta.getStatusCode() == 400)  //Se la risposta è un errore rifaccio la richiesta
                 System.exit(0);
+
             giocatore = risposta.getOggetto();
 
             System.out.println("Tua mano: \n" + giocatore.getMano().toString());  //Stampa mano
@@ -53,6 +61,7 @@ public class Client {
 
             int statoRisposta = 0;
             while(statoRisposta != 200){
+
             //Chiedo quale azione vuole eseguire e al limite la invio al server
                 System.out.println("Inserisci quale mossa vuoi fare: CARTA | STAI | RADDOPPIO | SPLIT | ASSICURAZIONE");
                 String mossa = input.readLine();

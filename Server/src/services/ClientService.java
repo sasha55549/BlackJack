@@ -39,20 +39,22 @@ public class ClientService {
             e.printStackTrace(System.err);
         }
     }
-    public Object reciveMessage() {
+    public Message recieveMessage() {
         if(socket.isClosed()) {
             return null;
         }
         try {
-            if(in.readObject() instanceof Message) {
-                Message message = (Message) in.readObject();
-                return message.getOggetto();
+            Object oggetto = in.readObject();
+            if(oggetto instanceof Message) {
+                Message message = (Message) oggetto;
+                return message;
             }
             else {
                 throw new IOException("Message is not an instance of Message");
             }
-        } catch (ClassNotFoundException | IOException e) {                        
-            return new Exception("Error during message passing");
+        } catch (ClassNotFoundException | IOException e) {          
+            System.out.println("Error during message passing");              
+            return null;
         }
     }
 }

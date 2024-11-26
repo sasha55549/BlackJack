@@ -11,17 +11,17 @@ public class Server {
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(PORT);
+            Server server = new Server();
             while (true) {
                 System.out.println("Listening on port " + PORT);
                 Socket socket = serverSocket.accept();
                 System.out.println("Connection accepted by " + serverSocket.getInetAddress().toString());
 
-                Server server = new Server();
                 if(server.getClientController()!=null) {
                     server.getClientController().addClient(socket);
                 }
                 else {
-                    server.setHandler(new ClientController());
+                    server.setHandler(new ClientController(socket));
                 }
                 if(!server.getClientController().startGame()) {
                     System.out.println("Waiting for players to join the game");

@@ -7,14 +7,14 @@ public class Giocatore {
     protected String playerId;
     protected double bilancio;
     protected int puntata;
-    protected Mano mano;
+    protected ArrayList<Carta> mano;
     protected Socket playerSocket;
     protected boolean stayed;
 
     public Giocatore() {
     }
 
-    public Giocatore(String playerId, double bilancio, int puntata, Mano mano, Socket playerSocket, boolean stayed) {
+    public Giocatore(String playerId, double bilancio, int puntata, ArrayList<Carta> mano, Socket playerSocket, boolean stayed) {
         this.playerId = playerId;
         this.bilancio = bilancio;
         this.puntata = puntata;
@@ -46,7 +46,7 @@ public class Giocatore {
     public void hit(Carta carta) {
         mano.add(carta);
     }
-    public Mano getMano() {
+    public ArrayList<Carta> getMano() {
         return mano;
     }
     
