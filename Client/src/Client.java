@@ -22,16 +22,6 @@ public class Client {
 
         Message risposta = (Message) in.readObject();
 
-        while(risposta.getStatusCode() == 101){
-            try{
-                Thread.sleep(500);
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            out.writeObject(new Message("INIZIO"));
-            risposta = (Message) in.readObject();
-        }
-
         if(risposta.getStatusCode() != 100)  //Controllo che la connessione sia stata accettata
             System.exit(0);   
       
@@ -39,9 +29,10 @@ public class Client {
         Giocatore giocatore = null;
 
     //Partita
-        do{
-            out.writeObject(new Message("TURNO", playerId, giocatore));
-        } while(((Message) in.readObject()).getStatusCode() != 200);  //Finchè il server non invia la conferma del turno
+        out.writeObject(new Message("TURNO", playerId, giocatore));
+        risposta = (Message) in.readObject();
+        if(risposta.getStatusCode() != 200)
+            System.exit(0);
 
     //INIZIO DEL MIO TURNO
         Stato statoPartita = new Stato();
@@ -55,7 +46,7 @@ public class Client {
         Mano manoDealer = null; //La ricavo poi dallo stato della partita
 
         //Stampa dello stato
-        Sytstem.out.println(statoPartita.toString());
+        System.out.println(statoPartita.toString());
 
         System.out.println("Tua mano: \n" + giocatore.getMano().toString());  //Stampa mano
         System.out.println("Mano dealer: \n" + manoDealer.toString());
@@ -70,24 +61,30 @@ public class Client {
             mossa = input.readLine();
             switch(mossa){
                 case "HIT":
-                    out.writeObject(new Message("HIT", playerId, giocatore));
-                    statoRisposta = ((Message) in.readObject()).getStatusCode();
+                    out.writeObject(new Message("HIT", playerId, null));
+                    risposta = (Message) in.readObject();
+                    if(risposta.getStatusCode() == 200){  //Se la richiesta è andata a buon fine
+                        if(risposta.getOggetto() instanceof Carta)
+                            giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
+                    }
                     break;
                 case "STAY":
                     out.writeObject(new Message("STAY", playerId, giocatore));
-                    statoRisposta = ((Message) in.readObject()).getStatusCode();
+                    risposta = (Message) in.readObject();
+                    if(risposta.getStatusCode() != 200)
+                        System.exit(0);
                     break;
                 case "DOUBLE":
                     out.writeObject(new Message("DOUBLE", playerId, giocatore));
-                    statoRisposta = ((Message) in.readObject()).getStatusCode();
+                    risposta = (Message) in.readObject();
                     break;
                 case "SPLIT":
                     out.writeObject(new Message("SPLIT", playerId, giocatore));
-                    statoRisposta = ((Message) in.readObject()).getStatusCode();
+                    risposta = (Message) in.readObject();
                     break;
                 case "INSURANCE":
                     out.writeObject(new Message("INSURANCE", playerId, giocatore));
-                    statoRisposta = ((Message) in.readObject()).getStatusCode();
+                    risposta = (Message) in.readObject();
                     break;
                 default:
                     statoRisposta = 400;
@@ -98,17 +95,18 @@ public class Client {
         }
 
     //Richiesta se ho vinto o no
-        out.writeObject(new Message("VITTORIA", playerId, giocatore));
-        if(((Message) in.readObject()).getStatusCode() == 210)
-            System.out.println("Hai vinto questo round");
+        out.writeObject(new Message("VITTORIA", playerId, null));
+        risposta = (Message) in.readObject();
+        if(risposta.getStatusCode() == 200)
+            System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di vittoria
         else
-            System.out.println("Hai perso questo round");
+            System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di sconfitta
 
     //Richiesta dello stato della partita
         out.writeObject(new Message("STATO", playerId, statoPartita));
         risposta = (Message) in.readObject();
         if(risposta.getStatusCode() == 200)
-            System.out.println(((Stato) risposta.getObject()).toString());
+            System.out.println(((Stato) risposta.getOggetto()).toString());
         else   
             System.out.println("Errore");
 
