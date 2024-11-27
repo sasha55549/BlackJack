@@ -159,15 +159,23 @@ public class PartitaController extends Thread {
                 return new Message(200,message.getPlayerId(),new Stato(giocatori,dealer.getMano(),punteggi));
             case "HIT":
                 if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21) {
-                    giocatore.hit(mazzo.removeFirst());
+                    giocatore.hit(mazzo.remove(0));
                     calcolaPunteggi();
-                    if (punteggi.get(giocatore.getPlayerId())>=21) giocatore.stay(true);
+                    if (punteggi.get(giocatore.getPlayerId())>=21) {
+                        giocatore.stay(true);
+                        if (i.hasNext()) currentPlayer = i.next().getPlayerId();
+                    }
                     return new Message(200,giocatore.getPlayerId());
-                } //TODO continuo domani
-                break;
+                } else {
+                    return new Message(404,giocatore.getPlayerId(),"Operazione non consentita");
+                }
             case "STAY":
-                
-                break;
+                if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<=21) {
+                    giocatore.stay(true);
+                    if (i.hasNext()) currentPlayer = i.next().getPlayerId();
+                    return new Message(200,giocatore.getPlayerId());
+                }
+                else return new Message(404,giocatore.getPlayerId(),"Operazione non consentita");
             case "DOUBLE":
                 
                 break;
@@ -192,13 +200,13 @@ public class PartitaController extends Thread {
 
     private void distribuisciCarte(){
         for (Giocatore giocatore : giocatori) {
-            giocatore.hit(mazzo.removeFirst());
+            giocatore.hit(mazzo.remove(0));
         }
-        dealer.hit(mazzo.removeFirst());
+        dealer.hit(mazzo.remove(0));
         for (Giocatore giocatore : giocatori) {
-            giocatore.hit(mazzo.removeFirst());
+            giocatore.hit(mazzo.remove(0));
         }
-        dealer.hit(mazzo.removeFirst());
+        dealer.hit(mazzo.remove(0));
     }
     @Override
     public void run(){
@@ -213,7 +221,7 @@ public class PartitaController extends Thread {
            
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
-            dealer.hit(mazzo.removeFirst());
+            dealer.hit(mazzo.remove(0));
             calcolaPunteggi();
         }
     }
