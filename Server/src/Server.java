@@ -1,3 +1,5 @@
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -15,13 +17,16 @@ public class Server {
             while (true) {
                 System.out.println("Listening on port " + PORT);
                 Socket socket = serverSocket.accept();
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
                 System.out.println("Connection accepted by " + serverSocket.getInetAddress().toString());
 
                 if(server.getClientController()!=null) {
                     server.getClientController().addClient(socket);
                 }
                 else {
-                    server.setHandler(new ClientController(socket));
+                    server.setHandler(new ClientController(socket, in, out));
                 }
                 if(!server.getClientController().startGame()) {
                     System.out.println("Waiting for players to join the game");

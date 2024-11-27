@@ -45,7 +45,7 @@ public class Client {
         if(risposta.getOggetto() instanceof Stato)
             statoPartita = (Stato) risposta.getOggetto();
 
-        giocatore = (Giocatore) null;  //Lo ricavo dalòlo stato della partita
+        giocatore = (Giocatore) null;  //Lo ricavo dallo stato della partita
         Mano manoDealer = null; //La ricavo poi dallo stato della partita
 
         //Stampa dello stato

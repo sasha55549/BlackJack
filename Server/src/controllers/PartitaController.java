@@ -1,4 +1,6 @@
 package controllers;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,13 +26,17 @@ public class PartitaController extends Thread {
     private String currentPlayer;
     private Iterator<Giocatore> i;
     static int playersNumber = 0;
+    private ArrayList<ObjectInputStream> inList;
+    private ArrayList<ObjectOutputStream> outList;
 
-    public PartitaController (ArrayList<Socket> sockets){
+    public PartitaController (ArrayList<Socket> sockets, ArrayList<ObjectInputStream> inList, ArrayList<ObjectOutputStream> outList){
         this.giocatori = new ArrayList<Giocatore>();
         this.giocatori2 = new HashMap<String,Giocatore>();
         this.punteggi = new HashMap<String,Integer>();
         this.connections = new HashMap<Giocatore,ClientCommunicationService>();
         this.mazzo = new ArrayList<Carta>();
+        this.inList = inList;
+        this.outList = outList;
 
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
@@ -38,7 +44,7 @@ public class PartitaController extends Thread {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer, ));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
         }
         this.i= giocatori.iterator();
