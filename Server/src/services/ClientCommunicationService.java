@@ -21,7 +21,7 @@ public class ClientCommunicationService extends Thread{
     public ClientCommunicationService() {
 
     }
-    public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, Giocatore giocatore) {
+    public ClientCommunicationService(PartitaController partita, Socket socket, Giocatore giocatore) {
         this.partita = partita;
         this.clientService = new ClientService(socket);
         this.giocatore = giocatore;
@@ -29,7 +29,6 @@ public class ClientCommunicationService extends Thread{
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-            this.turno = turno;
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }

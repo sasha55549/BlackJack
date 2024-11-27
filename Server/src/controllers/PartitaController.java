@@ -39,7 +39,7 @@ public class PartitaController extends Thread {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, giocatore));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, giocatore));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
         }
         this.i= giocatori.iterator();
@@ -223,7 +223,7 @@ public class PartitaController extends Thread {
 
     private double calcolaVincita(Giocatore giocatore){
         double vincita = 0;
-
+        //TODO
         return vincita;
     }
 
@@ -261,6 +261,9 @@ public class PartitaController extends Thread {
         while (punteggi.get(dealer.getPlayerId())<17) {
             dealer.hit(mazzo.remove(0));
             calcolaPunteggi();
+        }
+        fine=true;
+        while (fine) {
         }
     }
     
