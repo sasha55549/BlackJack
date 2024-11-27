@@ -58,4 +58,6 @@ Response_code:
 	201: non finito
 	210: VITTORIA
 
+	300: no
+
 	400: errore
