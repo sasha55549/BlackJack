@@ -24,6 +24,7 @@ public class PartitaController extends Thread {
     private String currentPlayer;
     private Iterator<Giocatore> i;
     static int playersNumber = 0;
+    private boolean fine = false;
 
     public PartitaController (ArrayList<Socket> sockets){
         this.giocatori = new ArrayList<Giocatore>();
@@ -153,8 +154,7 @@ public class PartitaController extends Thread {
                     return new Message(300, message.getPlayerId());
                 }
             case "INIZIO":
-                //TODO gestire nel client controller
-                break;
+                return new Message(200,giocatore.getPlayerId());
             case "PUNTATA":
                 if (giocatore.getPuntata()==0 && ((Double)message.getOggetto())<=giocatore.getBilancio()) {
                         giocatore.setPuntata((Double)message.getOggetto());
@@ -200,16 +200,37 @@ public class PartitaController extends Thread {
                 
                 break;
             case "FINE":
-                
-                break;
+                if (fine) return new Message(200,giocatore.getPlayerId()); 
+                else return new Message(300,giocatore.getPlayerId());
             case "VITTORIA":
-                
-                break;
+                int vincita = verificaVincita(giocatore);
+                if (vincita==1) return new Message(200,giocatore.getPlayerId(),"Vincita");
+                if (vincita==0) return new Message(200,giocatore.getPlayerId(),"Pareggio");
+                if (vincita==-1) return new Message(200,giocatore.getPlayerId(),"Perdita");
             default:
                 return new Message(400,giocatore.getPlayerId(),"Operazione non riconosciuta");
-                break;
         }
         return null;
+    }
+
+    private int verificaVincita(Giocatore giocatore){
+        int vincita = 1;
+        if (!fine || (punteggi.get(giocatore.getPlayerId())<punteggi.get(dealer.getPlayerId()) && punteggi.get(dealer.getPlayerId())<=21) || punteggi.get(giocatore.getPlayerId())>21) return -1;
+        if ((punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(giocatore.getPlayerId())<=21 ) || (hasBlackjack(giocatore) && !hasBlackjack(dealer))) return 1;
+        if (punteggi.get(giocatore.getPlayerId())==punteggi.get(dealer.getPlayerId())) return 0;
+        return vincita;
+    }
+
+    private double calcolaVincita(Giocatore giocatore){
+        double vincita = 0;
+
+        return vincita;
+    }
+
+    private boolean hasBlackjack(Giocatore giocatore){
+        boolean blackjack = false;
+        if (punteggi.get(giocatore.getPlayerId())==21 && giocatore.getMano().size()==2) blackjack=true;
+        return blackjack;
     }
 
 
@@ -233,7 +254,9 @@ public class PartitaController extends Thread {
         calcolaPunteggi();
         currentPlayer=i.next().getPlayerId();
         while (!allPlayersStayed()) {
-           
+        }
+        for (Giocatore giocatore : giocatori) {
+            verificaVincita(giocatore);
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
             dealer.hit(mazzo.remove(0));

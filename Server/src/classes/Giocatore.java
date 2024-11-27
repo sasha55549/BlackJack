@@ -42,7 +42,7 @@ public class Giocatore {
     public void setPuntata(double puntata) {
         this.puntata = puntata;
     }
-    
+
 
     public void hit(Carta carta) {
         mano.add(carta);
@@ -58,6 +58,7 @@ public class Giocatore {
     public boolean isStayed() {
         return this.stayed;
     }
+
 
     public void stay(boolean stayed) {
         this.stayed = stayed;

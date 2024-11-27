@@ -42,29 +42,7 @@ public class ClientCommunicationService extends Thread{
                 Message response = partita.turno(request);
                 clientService.sendMessage(response);
 
-
-                /*Spostare la logica nel metodo turno
-                if(input.getMethod().equals("TURNO")) {
-                    if(turno) {
-                        try {
-                            out.writeObject(new Message(200, giocatore.getPlayerId()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else if(((Message)input).getMethod().equals("INIZIO")) {
-                    //TODO capire chi deve instanziare l'oggetto e come l'oggetto comunicherà con gli altri
-                } */
         }
-    }
-
-    //Spostiamo la gestione del turno nella partita quindi eliminiamo
-    public boolean getTurno() {
-        return this.turno;
-    }
-
-    public void setTurno(boolean turno) {
-        this.turno = turno;
     }
     
 }
