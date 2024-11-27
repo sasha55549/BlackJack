@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Giocatore {
     protected String playerId;
     protected double bilancio;
-    protected int puntata;
+    protected double puntata;
     protected Mano mano;
     protected Socket playerSocket;
     protected boolean stayed;
@@ -14,7 +14,7 @@ public class Giocatore {
     public Giocatore() {
     }
 
-    public Giocatore(String playerId, double bilancio, int puntata, Mano mano, Socket playerSocket, boolean stayed) {
+    public Giocatore(String playerId, double bilancio, double puntata, Mano mano, Socket playerSocket, boolean stayed) {
         this.playerId = playerId;
         this.bilancio = bilancio;
         this.puntata = puntata;
@@ -35,13 +35,14 @@ public class Giocatore {
         return this.bilancio;
     }
     
-    public int getPuntata() {
+    public double getPuntata() {
         return this.puntata;
     }
     
-    public void setPuntata(int puntata) {
+    public void setPuntata(double puntata) {
         this.puntata = puntata;
     }
+    
 
     public void hit(Carta carta) {
         mano.add(carta);

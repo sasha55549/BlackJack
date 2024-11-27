@@ -155,6 +155,12 @@ public class PartitaController extends Thread {
             case "INIZIO":
                 //TODO gestire nel client controller
                 break;
+            case "PUNTATA":
+                if (giocatore.getPuntata()==0 && ((Double)message.getOggetto())<=giocatore.getBilancio()) {
+                        giocatore.setPuntata((Double)message.getOggetto());
+                        return new Message(200,giocatore.getPlayerId());
+                }
+                else return new Message(404,giocatore.getPlayerId(),"Operazione non consentita");
             case "STATO":
                 return new Message(200,message.getPlayerId(),new Stato(giocatori,dealer.getMano(),punteggi));
             case "HIT":
@@ -177,8 +183,16 @@ public class PartitaController extends Thread {
                 }
                 else return new Message(404,giocatore.getPlayerId(),"Operazione non consentita");
             case "DOUBLE":
-                
-                break;
+                if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21 && giocatore.getMano().size()==2 && giocatore.getPuntata()<=giocatore.getBilancio()) {
+                    giocatore.setPuntata(giocatore.getPuntata()*2);
+                    giocatore.hit(mazzo.remove(0));
+                    calcolaPunteggi();
+                    giocatore.stay(true);
+                    if (i.hasNext()) currentPlayer = i.next().getPlayerId();
+                return new Message(200,giocatore.getPlayerId());
+                } else {
+                return new Message(404,giocatore.getPlayerId(),"Operazione non consentita");
+                }
             case "SPLIT":
                 
                 break;
@@ -192,11 +206,13 @@ public class PartitaController extends Thread {
                 
                 break;
             default:
-            //TODO 404
+                return new Message(400,giocatore.getPlayerId(),"Operazione non riconosciuta");
                 break;
         }
         return null;
     }
+
+
 
     private void distribuisciCarte(){
         for (Giocatore giocatore : giocatori) {
@@ -210,7 +226,6 @@ public class PartitaController extends Thread {
     }
     @Override
     public void run(){
-        //TODO realizzazione puntate
         connessioni();
         generaMazzo();
         mischiaMazzo();
