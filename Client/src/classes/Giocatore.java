@@ -1,7 +1,6 @@
 package classes;
 
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Giocatore {
     protected String playerId;

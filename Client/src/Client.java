@@ -99,5 +99,7 @@ public class Client {
             System.out.println("Hai vinto questo round");
         else
             System.out.println("Hai perso questo round");
+        
+        socket.close();
     }
 }

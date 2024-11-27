@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
+import classes.Dealer;
 import classes.Giocatore;
 import classes.Message;
 import controllers.PartitaController;
@@ -16,20 +16,25 @@ public class ClientCommunicationService extends Thread{
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean turno;
+    private boolean iniziata;
     private Giocatore giocatore;
+    private Dealer dealer;
+    private Message messaggioImportante;
 
     public ClientCommunicationService() {
 
     }
-    public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, Giocatore giocatore) {
+    public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, boolean iniziata, Giocatore giocatore, Dealer dealer) {
         this.partita = partita;
         this.clientService = new ClientService(socket);
         this.giocatore = giocatore;
+        this.dealer = dealer;
         this.socket = socket;
+        this.turno = turno;
+        this.iniziata = iniziata;
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-            this.turno = turno;
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
@@ -38,27 +43,36 @@ public class ClientCommunicationService extends Thread{
     @Override
     public void run() {
         while (true) {
-                Message request = clientService.recieveMessage();
-                Message response = partita.turno(request);
-                clientService.sendMessage(response);
-
-
-                /*Spostare la logica nel metodo turno
-                if(input.getMethod().equals("TURNO")) {
-                    if(turno) {
-                        try {
-                            out.writeObject(new Message(200, giocatore.getPlayerId()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            try {
+                if(in.available() == 0) {
+                        Object ciao = null;
+                            ciao = in.readObject();
+                        
+                        if(ciao instanceof Message) {
+                            Message input = (Message) ciao;
+                            if(input.getMethod().equals("TURNO")) {
+                                if(turno) {
+                                    clientService.sendMessage(new Message(200, giocatore.getPlayerId()));   
+                                }
+                                else {
+                                    clientService.sendMessage(new Message(300, giocatore.getPlayerId()));
+                                }
+                        } else if(input.getMethod().equals("INIZIO")) {
+                            if(iniziata) {
+                                clientService.sendMessage(new Message(200, giocatore.getPlayerId(), giocatore));
+                                clientService.sendMessage(new Message(200, giocatore.getPlayerId(), dealer.getMano()));
+                            }
+                        } else {
+                            partita.turno(input);
                         }
                     }
-                } else if(((Message)input).getMethod().equals("INIZIO")) {
-                    //TODO capire chi deve instanziare l'oggetto e come l'oggetto comunicherà con gli altri
-                } */
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    //Spostiamo la gestione del turno nella partita quindi eliminiamo
     public boolean getTurno() {
         return this.turno;
     }
@@ -67,4 +81,18 @@ public class ClientCommunicationService extends Thread{
         this.turno = turno;
     }
     
+    
+    public boolean getIniziata() {
+        return this.iniziata;
+    }
+
+    public void setIniziata(boolean iniziata) {
+        this.iniziata = iniziata;
+    }
+    public void setMessaggio(Message messaggioImportante) {
+        this.messaggioImportante = messaggioImportante;
+    }
+    public Message getMessaggio() {
+        return messaggioImportante;
+    }
 }

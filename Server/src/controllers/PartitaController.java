@@ -38,7 +38,7 @@ public class PartitaController extends Thread {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, giocatore));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
         }
         this.i= giocatori.iterator();
@@ -140,43 +140,58 @@ public class PartitaController extends Thread {
             
         }
 
-    //TODO
     public synchronized Message turno(Message message) {
         String method = message.getMethod();
         Giocatore giocatore = giocatori2.get(message.getPlayerId());
         switch (method) {
-            case "TURNO":
-                if (message.getPlayerId().equalsIgnoreCase(currentPlayer)) {
-                    return new Message(200,message.getPlayerId());
-                }
-                else {
-                    return new Message(300, message.getPlayerId());
-                }
-            case "INIZIO":
-                //TODO gestire nel client controller
-                break;
             case "STATO":
                 return new Message(200,message.getPlayerId(),new Stato(giocatori,dealer.getMano(),punteggi));
             case "HIT":
                 if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21) {
-                    giocatore.hit(mazzo.removeFirst());
+                    Carta carta = mazzo.remove(0);
+                    giocatore.hit(carta);
                     calcolaPunteggi();
-                    if (punteggi.get(giocatore.getPlayerId())>=21) giocatore.stay(true);
-                    return new Message(200,giocatore.getPlayerId());
-                } //TODO continuo domani
-                break;
+                    if (punteggi.get(giocatore.getPlayerId())>=21) 
+                        giocatore.stay(true);
+                    return new Message(200,giocatore.getPlayerId(), carta);
+                }
             case "STAY":
                 
                 break;
             case "DOUBLE":
-                
-                break;
+                if(message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21 && giocatore.getBilancio()-giocatore.getPuntata()>=0) {
+                    Carta carta = mazzo.remove(0);
+                    giocatore.doublePlay(carta);
+                    calcolaPunteggi();
+                    return new Message(200, giocatore.getPlayerId(), carta);
+                }
+                return new Message(300, giocatore.getPlayerId());
             case "SPLIT":
-                
+                if(message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21 && giocatore.getBilancio()-giocatore.getPuntata()>=0 && (giocatore.getMano().get(0).getValore() == giocatore.getMano().get(1).getValore())) {
+                    Giocatore split = giocatore.split();
+                    giocatori.add(giocatori.indexOf(giocatore), split);
+                    giocatori2.put(split.getPlayerId(), split);
+                    connections.put(split, new ClientCommunicationService(this, giocatore.getPlayerSocket(), false, true, split, dealer));
+                    giocatore.hit(mazzo.remove(0));
+                    split.hit(mazzo.remove(0));
+                    calcolaPunteggi();
+                    if(punteggi.get(giocatore.getPlayerId())>21) {
+                        giocatore.stay(true);
+                    }
+                    if(punteggi.get(split.getPlayerId())>21) {
+                        split.stay(true);
+                    }
+                    Giocatore[] giocatoriTemp = {giocatore, split};
+                    return new Message(200, giocatore.getPlayerId(), giocatoriTemp);
+
+                }
                 break;
             case "INSURANCE":
-                
-                break;
+            if(message.getPlayerId().equalsIgnoreCase(currentPlayer) && dealer.getMano().get(0).getValore().equals("A") && giocatore.getBilancio() - (giocatore.getPuntata()/2)>=0) {
+                giocatore.insurance();
+                return new Message(200, giocatore.getPlayerId());
+            }
+            return new Message(300, giocatore.getPlayerId());
             case "FINE":
                 
                 break;
@@ -184,7 +199,6 @@ public class PartitaController extends Thread {
                 
                 break;
             default:
-            //TODO 404
                 break;
         }
         return null;
@@ -192,13 +206,13 @@ public class PartitaController extends Thread {
 
     private void distribuisciCarte(){
         for (Giocatore giocatore : giocatori) {
-            giocatore.hit(mazzo.removeFirst());
+            giocatore.hit(mazzo.remove(0));
         }
-        dealer.hit(mazzo.removeFirst());
+        dealer.hit(mazzo.remove(0));
         for (Giocatore giocatore : giocatori) {
-            giocatore.hit(mazzo.removeFirst());
+            giocatore.hit(mazzo.remove(0));
         }
-        dealer.hit(mazzo.removeFirst());
+        dealer.hit(mazzo.remove(0));
     }
     @Override
     public void run(){
@@ -213,7 +227,7 @@ public class PartitaController extends Thread {
            
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
-            dealer.hit(mazzo.removeFirst());
+            dealer.hit(mazzo.remove(0));
             calcolaPunteggi();
         }
     }

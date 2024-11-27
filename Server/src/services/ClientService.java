@@ -32,25 +32,6 @@ public class ClientService {
             e.printStackTrace(System.err);
         }
     }
-
-    //TODO teoricamente eliminare questo metodo e mettere la creazione dei messaggi all'interno delle classi
-    public void sendMessage(int statusCode, String playerId, Object object) {
-        if(socket.isClosed()) {
-            return;
-        }
-        Message message;
-        if(object instanceof String) {
-            message = new Message(statusCode, playerId, String.valueOf(object));
-        }
-        else {
-            message = new Message(statusCode, playerId, object);
-        }
-        try {
-            out.writeObject(message);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-    }
     public Message recieveMessage() {
         if(socket.isClosed()) {
             return null;
