@@ -156,18 +156,5 @@ public class Client {
                 }
             }
         }
-<<<<<<< HEAD
-
-    //Richiesta se ho vinto o no
-        out.writeObject(new Message("VITTORIA", playerId, null));
-        risposta = (Message) in.readObject();
-        if(risposta.getStatusCode() == 200)
-            System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di vittoria
-        else
-            System.out.println("Hai perso questo round");
-        
-        socket.close();
-=======
->>>>>>> 3587c00e3f21c831e65f0d6e022c61a96db03792
     }
 }
