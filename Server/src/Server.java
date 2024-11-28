@@ -17,13 +17,14 @@ public class Server {
             while (true) {
                 System.out.println("Listening on port " + PORT);
                 Socket socket = serverSocket.accept();
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-
                 System.out.println("Connection accepted by " + serverSocket.getInetAddress().toString());
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
                 if(server.getClientController()!=null) {
                     server.getClientController().addClient(socket);
+                    server.getClientController().addObjectInputStream(in);
+                    server.getClientController().addObjectOutputStream(out);
                 }
                 else {
                     server.setHandler(new ClientController(socket, in, out));

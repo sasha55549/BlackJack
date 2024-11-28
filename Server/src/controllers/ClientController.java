@@ -18,13 +18,19 @@ public class ClientController {
     public boolean startGame() {
         if(clients.size()>=2) {
             System.out.println("Game starting");
-            new PartitaController(clients).start();
+            new PartitaController(clients, inList, outList).start();
             return true;
         }
         return false;
     }
     public void addClient(Socket socket) {
         clients.add(socket);
+    }
+    public void addObjectInputStream(ObjectInputStream in) {
+        inList.add(in);
+    }
+    public void addObjectOutputStream(ObjectOutputStream out) {
+        outList.add(out);
     }
     public ArrayList<Socket> getClients() {
         return clients;
