@@ -14,6 +14,8 @@ public class Message implements Serializable {
 //Response
     public Message(int statusCode, String playerId) {
         this.statusCode = statusCode;
+        this.playerId=playerId;
+        this.oggetto=null;
     }
     public Message(int statusCode, String playerId, Object oggetto) {
         this.statusCode = statusCode;
@@ -28,6 +30,7 @@ public class Message implements Serializable {
 
     public Message(String method, String playerId, Object oggetto){
         this.method = method;
+        this.playerId=playerId;
         this.oggetto = oggetto;
     }
 

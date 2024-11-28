@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -12,46 +13,65 @@ public class Client {
     public static void main(String[] args) throws Exception {
         InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
         Socket socket = new Socket(serverAddress, PORT);
+        System.out.println("Connesso al server");
             
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         
-    //Invio richiesta INIZIO
-        out.writeObject(new Message("INIZIO"));
+        Thread.sleep(500 + (int) Math.floor(Math.random()*200));
 
+        //Invio richiesta INIZIO
+        out.writeObject(new Message("INIZIO"));
+        
+        System.out.println("ciao");
+        
         Message risposta = (Message) in.readObject();
 
-        if(risposta.getStatusCode() != 100)  //Controllo che la connessione sia stata accettata
+        System.out.println("StatusCode richiesta INIZIO: " + risposta.getStatusCode());
+
+        if(risposta.getStatusCode() != 200)  //Controllo che la connessione sia stata accettata
             System.exit(0);   
       
         String playerId = risposta.getPlayerId();
-        Giocatore giocatore = null;
+        System.out.println("PlayerId " + playerId);
+        Giocatore giocatore = new Giocatore();
 
     //Partita
         out.writeObject(new Message("TURNO", playerId, giocatore));
+        System.out.println("prova");
         risposta = (Message) in.readObject();
+        System.out.println(risposta.getStatusCode());
         if(risposta.getStatusCode() != 200)
-            System.exit(0);
+            System.out.println("Errore inviato dal server");
+        giocatore = (Giocatore) risposta.getOggetto();
 
     //INIZIO DEL MIO TURNO
-        Stato statoPartita = null;
+        Stato statoPartita = new Stato(null, null, null);
         out.writeObject(new Message("STATO", playerId, statoPartita));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
         risposta = (Message) in.readObject();
+        System.out.println(risposta.getPlayerId());
+        System.out.println("Risposta di STATO: " + risposta.getStatusCode());
         
         if(risposta.getStatusCode() != 200)  //Se la risposta è un errore rifaccio la richiesta
-            System.exit(0);
+            System.out.println("Errore inviato dal server");
         
         if(risposta.getOggetto() instanceof Stato)
             statoPartita = (Stato) risposta.getOggetto();
 
-        giocatore = (Giocatore) null;  //Lo ricavo dallo stato della partita
-        Mano manoDealer = null; //La ricavo poi dallo stato della partita
+        // ArrayList<Giocatore> giocatori = new ArrayList<Giocatore>();
+        // Mano dealerMano = new Mano();
 
-        //Stampa dello stato
+      /*for(int i=0; i < giocatori.size(); i++){
+            if(giocatori.get(i).getPlayerId().equals("P" + i))
+                giocatore = (Giocatore) giocatori.get(i);
+        }*/
+
+        // dealerMano = statoPartita.getDealerMano();
+
+        //Stampa dello stato della partita
         System.out.println(statoPartita.toString());
-
-        System.out.println("Mano dealer: \n" + manoDealer.toString());
+        System.out.println("Mano giocatore: " + giocatore.getMano());
 
     //Scelta mosse
         Giocatore giocatore2 = null;
@@ -90,7 +110,7 @@ public class Client {
         while(!mossa.equals("STAY")){
             
             System.out.println("Tua mano: \n" + giocatore.getMano().toString());  //Stampa mano
-            System.out.println("Inserisci quale mossa vuoi fare: HIT | STAI | DOUBLE | SPLIT | INSURANCE");  //Chiedo quale azione vuole eseguire e al limite la invio al server
+            System.out.println("Inserisci quale mossa vuoi fare: HIT | STAY | DOUBLE | SPLIT | INSURANCE");  //Chiedo quale azione vuole eseguire e al limite la invio al server
             mossa = input.readLine();
             risposta = null;
 
@@ -108,7 +128,7 @@ public class Client {
                     out.writeObject(new Message("STAY", giocatore.getPlayerId(), giocatore));
                     risposta = (Message) in.readObject();
                     if(risposta.getStatusCode() != 200)
-                        System.exit(0);
+                        System.out.println("Errore del server dopo richiesta STAY");
                     break;
 
                 case "DOUBLE":
