@@ -23,8 +23,10 @@ public class ClientController {
         }
         return false;
     }
-    public void addClient(Socket socket) {
+    public void addClient(Socket socket, ObjectInputStream in, ObjectOutputStream out) {
         clients.add(socket);
+        inList.add(in);
+        outList.add(out);
     }
     public ArrayList<Socket> getClients() {
         return clients;
