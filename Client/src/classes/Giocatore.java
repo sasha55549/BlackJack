@@ -1,8 +1,11 @@
 package classes;
 
+import java.io.Serializable;
 import java.net.Socket;
 
-public class Giocatore {
+public class Giocatore implements Serializable {
+
+    private static final long serialVersionUID = 7687915238L;
     protected String playerId;
     protected double bilancio;
     protected int puntata;

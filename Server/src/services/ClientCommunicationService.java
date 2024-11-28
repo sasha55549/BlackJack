@@ -26,7 +26,7 @@ public class ClientCommunicationService extends Thread{
     }
     public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, boolean iniziata, Giocatore giocatore, Dealer dealer, ObjectOutputStream out, ObjectInputStream in) {
         this.partita = partita;
-        this.clientService = new ClientService(socket);
+        this.clientService = new ClientService(socket, in, out);
         this.giocatore = giocatore;
         this.dealer = dealer;
         this.socket = socket;
@@ -90,5 +90,11 @@ public class ClientCommunicationService extends Thread{
     }
     public Message getMessaggio() {
         return messaggioImportante;
+    }
+    public ObjectInputStream getIn() {
+        return in;
+    }
+    public ObjectOutputStream getOut() {
+        return out;
     }
 }

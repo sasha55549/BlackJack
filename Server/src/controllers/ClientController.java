@@ -1,6 +1,5 @@
 package controllers;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,7 +17,8 @@ public class ClientController {
     public boolean startGame() {
         if(clients.size()>=2) {
             System.out.println("Game starting");
-            new PartitaController(clients).start();
+            System.out.println(clients.size());
+            new PartitaController(clients, inList, outList).start();
             return true;
         }
         return false;

@@ -1,7 +1,8 @@
 package classes;
+
 import java.util.ArrayList;
 
-public class Mano extends ArrayList<Carta>{
+public class Mano extends ArrayList<Carta> {
     public Mano(){}
 
     @Override

@@ -1,26 +1,33 @@
 import classes.*;
+import services.ClientService;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class Client {
     public static final int PORT = 50000;
+    private ClientService clientService;
     public static void main(String[] args) throws Exception {
-        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
+        Client client = new Client();
+        String serverAddress = "localhost";
         Socket socket = new Socket(serverAddress, PORT);
             
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        client.clientService = new ClientService(socket, in, out);
         
     //Invio richiesta INIZIO
-        out.writeObject(new Message("INIZIO"));
+        client.clientService.sendMessage(new Message("INIZIO"));
 
-        Message risposta = (Message) in.readObject();
+        Object rispostaObj = client.clientService.recieveMessage();
+        Message risposta = null;
+        if(rispostaObj instanceof Message) {
+            risposta = (Message) rispostaObj;
+        }
 
         if(risposta.getStatusCode() != 100)  //Controllo che la connessione sia stata accettata
             System.exit(0);   

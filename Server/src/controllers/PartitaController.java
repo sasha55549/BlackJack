@@ -14,7 +14,6 @@ import classes.Mano;
 import classes.Message;
 import classes.Stato;
 import services.ClientCommunicationService;
-import services.ClientService;
 
 public class PartitaController extends Thread {
     private ArrayList<Giocatore> giocatori;
@@ -40,12 +39,14 @@ public class PartitaController extends Thread {
 
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
+        int k = 0;
         for (Socket socket : sockets) {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer, ));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer, outList.get(k), inList.get(k)));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
+            k++;
         }
         this.i= giocatori.iterator();
     }
@@ -177,7 +178,7 @@ public class PartitaController extends Thread {
                     Giocatore split = giocatore.split();
                     giocatori.add(giocatori.indexOf(giocatore), split);
                     giocatori2.put(split.getPlayerId(), split);
-                    connections.put(split, new ClientCommunicationService(this, giocatore.getPlayerSocket(), false, true, split, dealer));
+                    connections.put(split, new ClientCommunicationService(this, giocatore.getPlayerSocket(), false, true, split, dealer, connections.get(giocatore).getOut(), connections.get(giocatore).getIn()));
                     giocatore.hit(mazzo.remove(0));
                     split.hit(mazzo.remove(0));
                     calcolaPunteggi();

@@ -11,16 +11,11 @@ public class ClientService {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     
-    public ClientService() {
-    }
-    public ClientService(Socket socket) {
+    
+    public ClientService(Socket socket, ObjectInputStream in, ObjectOutputStream out) {
         this.socket = socket;
-        try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
+        this.in = in;
+        this.out = out;
     }
     public void sendMessage(Message message) {
         if(socket.isClosed()) {
@@ -32,6 +27,7 @@ public class ClientService {
             e.printStackTrace(System.err);
         }
     }
+
     public Message recieveMessage() {
         if(socket.isClosed()) {
             return null;
