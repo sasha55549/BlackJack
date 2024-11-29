@@ -27,6 +27,7 @@ public class PartitaController extends Thread {
     static int playersNumber = 0;
     private ArrayList<ObjectInputStream> inList;
     private ArrayList<ObjectOutputStream> outList;
+    private ArrayList<Socket> sockets;
 
     public PartitaController (ArrayList<Socket> sockets, ArrayList<ObjectInputStream> inList, ArrayList<ObjectOutputStream> outList){
         this.giocatori = new ArrayList<Giocatore>();
@@ -36,18 +37,22 @@ public class PartitaController extends Thread {
         this.mazzo = new ArrayList<Carta>();
         this.inList = inList;
         this.outList = outList;
+        this.sockets = sockets;
 
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
-        int k = 0;
+
+        int count=0;
+
         for (Socket socket : sockets) {
-            Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), socket, false);
+            Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer, outList.get(k), inList.get(k)));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, false, true, giocatore, dealer, inList.get(count), outList.get(count)));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
-            k++;
+            count++;
         }
+        
         this.i= giocatori.iterator();
     }
 
@@ -178,7 +183,7 @@ public class PartitaController extends Thread {
                     Giocatore split = giocatore.split();
                     giocatori.add(giocatori.indexOf(giocatore), split);
                     giocatori2.put(split.getPlayerId(), split);
-                    connections.put(split, new ClientCommunicationService(this, giocatore.getPlayerSocket(), false, true, split, dealer, connections.get(giocatore).getOut(), connections.get(giocatore).getIn()));
+                    connections.put(split, new ClientCommunicationService(this, sockets.get(giocatori.indexOf(giocatore)), false, true, split, dealer, connections.get(giocatore).getInput(), connections.get(giocatore).getOutput()));
                     giocatore.hit(mazzo.remove(0));
                     split.hit(mazzo.remove(0));
                     calcolaPunteggi();
@@ -224,11 +229,11 @@ public class PartitaController extends Thread {
     @Override
     public void run(){
         //TODO realizzazione puntate
-        connessioni();
         generaMazzo();
         mischiaMazzo();
         distribuisciCarte();
         calcolaPunteggi();
+        connessioni();
         currentPlayer=i.next().getPlayerId();
         while (!allPlayersStayed()) {
            

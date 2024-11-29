@@ -3,15 +3,18 @@ package classes;
 import java.io.Serializable;
 import java.net.Socket;
 
+
 public class Giocatore implements Serializable {
 
     private static final long serialVersionUID = 7687915238L;
+
     protected String playerId;
     protected double bilancio;
     protected int puntata;
     protected Mano mano;
     protected Socket playerSocket;
     protected boolean stayed;
+    private boolean insurance;
 
     public Giocatore() {
     }
@@ -65,13 +68,23 @@ public class Giocatore implements Serializable {
     }
     public void doublePlay(Carta carta) {
         setPuntata(puntata*2);
+        bilancio -= puntata;
         hit(carta);
     }
     public Giocatore split() {
-        Giocatore giocatore = new Giocatore(playerId+"B", bilancio, puntata, null, playerSocket, stayed);
-        giocatore.hit(mano.get(0));
-        mano.remove(0);
+        bilancio -= puntata;
+        puntata*=2;
+        Giocatore giocatore = new Giocatore(playerId+"B", 0, 0, null, playerSocket, stayed);
+        giocatore.hit(mano.remove(0));
         return giocatore;
+    }
+    public void insurance() {
+        bilancio -= puntata/2;
+        puntata+=puntata/2;
+        insurance = true;
+    }
+    public boolean getInsurance() {
+        return insurance;
     }
     @Override
     public String toString() {

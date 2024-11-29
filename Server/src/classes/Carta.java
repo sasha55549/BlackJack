@@ -2,6 +2,7 @@ package classes;
 
 import java.io.Serializable;
 
+
 public class Carta implements Serializable {
 
     private static final long serialVersionUID = -5527489521L;

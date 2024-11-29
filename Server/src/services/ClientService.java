@@ -11,7 +11,8 @@ public class ClientService {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     
-    
+    public ClientService() {
+    }
     public ClientService(Socket socket, ObjectInputStream in, ObjectOutputStream out) {
         this.socket = socket;
         this.in = in;
