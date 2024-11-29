@@ -14,7 +14,6 @@ import classes.Mano;
 import classes.Message;
 import classes.Stato;
 import services.ClientCommunicationService;
-import services.ClientService;
 
 public class PartitaController extends Thread {
     private ArrayList<Giocatore> giocatori;
@@ -42,7 +41,9 @@ public class PartitaController extends Thread {
 
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
+
         int count=0;
+
         for (Socket socket : sockets) {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), false);
             this.giocatori.add(giocatore);

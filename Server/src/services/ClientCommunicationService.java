@@ -90,12 +90,10 @@ public class ClientCommunicationService extends Thread{
     public Message getMessaggio() {
         return messaggioImportante;
     }
-
-    public ObjectInputStream getInput(){
+    public ObjectInputStream getIn() {
         return in;
     }
-
-    public ObjectOutputStream getOutput(){
+    public ObjectOutputStream getOut() {
         return out;
     }
 }

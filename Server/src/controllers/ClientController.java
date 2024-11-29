@@ -1,6 +1,5 @@
 package controllers;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,8 +22,10 @@ public class ClientController {
         }
         return false;
     }
-    public void addClient(Socket socket) {
+    public void addClient(Socket socket, ObjectInputStream in, ObjectOutputStream out) {
         clients.add(socket);
+        inList.add(in);
+        outList.add(out);
     }
     public void addObjectInputStream(ObjectInputStream in) {
         inList.add(in);

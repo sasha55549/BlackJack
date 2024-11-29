@@ -28,6 +28,7 @@ public class ClientService {
             e.printStackTrace(System.err);
         }
     }
+
     public Message recieveMessage() {
         if(socket.isClosed()) {
             return null;

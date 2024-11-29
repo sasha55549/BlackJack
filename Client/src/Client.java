@@ -1,8 +1,8 @@
 import classes.*;
+import services.ClientService;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.io.BufferedReader;
@@ -10,23 +10,27 @@ import java.io.InputStreamReader;
 
 public class Client {
     public static final int PORT = 50000;
+    private ClientService clientService;
     public static void main(String[] args) throws Exception {
-        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
+        Client client = new Client();
+        String serverAddress = "localhost";
         Socket socket = new Socket(serverAddress, PORT);
         System.out.println("Connesso al server");
             
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        client.clientService = new ClientService(socket, in, out);
         
-        Thread.sleep(500 + (int) Math.floor(Math.random()*200));
 
-        //Invio richiesta INIZIO
-        out.writeObject(new Message("INIZIO"));
-        
-        System.out.println("ciao");
-        
-        Message risposta = (Message) in.readObject();
+    //Invio richiesta INIZIO
+        client.clientService.sendMessage(new Message("INIZIO"));
+
+        Object rispostaObj = client.clientService.recieveMessage();
+        Message risposta = null;
+        if(rispostaObj instanceof Message) {
+            risposta = (Message) rispostaObj;
+        }
 
         System.out.println("StatusCode richiesta INIZIO: " + risposta.getStatusCode());
 
