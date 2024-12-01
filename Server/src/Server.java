@@ -22,9 +22,7 @@ public class Server {
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
                 if(server.getClientController()!=null) {
-                    server.getClientController().addClient(socket);
-                    server.getClientController().addObjectInputStream(in);
-                    server.getClientController().addObjectOutputStream(out);
+                    server.getClientController().addClient(socket, in, out);
                 }
                 else {
                     server.setHandler(new ClientController(socket, in, out));

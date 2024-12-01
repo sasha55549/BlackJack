@@ -183,7 +183,7 @@ public class PartitaController extends Thread {
                     Giocatore split = giocatore.split();
                     giocatori.add(giocatori.indexOf(giocatore), split);
                     giocatori2.put(split.getPlayerId(), split);
-                    connections.put(split, new ClientCommunicationService(this, sockets.get(giocatori.indexOf(giocatore)), false, true, split, dealer, connections.get(giocatore).getInput(), connections.get(giocatore).getOutput()));
+                    connections.put(split, new ClientCommunicationService(this, sockets.get(giocatori.indexOf(giocatore)), false, true, split, dealer, connections.get(giocatore).getIn(), connections.get(giocatore).getOut()));
                     giocatore.hit(mazzo.remove(0));
                     split.hit(mazzo.remove(0));
                     calcolaPunteggi();
