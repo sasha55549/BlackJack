@@ -37,7 +37,8 @@ Metodi:
 	INIZIO: chiedo al server se si può iniziare la partita
 	TURNO: chiedo al server se è il mio turno
 
-	STATUS: invio la mia mano al server per farmi dare le carte -> contenuto: mano
+	STATUS: invio una richiesta e il server mi risponde con lo stato della partita -> contenuto: oggetti di tipo Stato
+	PUNTEGGIO: invio al server una richiesta di dirmi il punteggio della mia mano -> contenuto risposta: Integer punteggio
 	HIT: invio una carta vuota al server per chiedere una carta -> contenuto: carta
 	STAY: invio al server una richiesta per stare
 	DOUBLE: 

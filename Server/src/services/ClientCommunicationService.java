@@ -46,7 +46,7 @@ public class ClientCommunicationService extends Thread{
                         if(ciao instanceof Message) {
                             Message input = (Message) ciao;
                             if(input.getMethod().equals("TURNO")) {
-                                if(turno) {  //Da fixare il turno
+                                if(turno) {
                                     clientService.sendMessage(new Message(200, giocatore.getPlayerId(), giocatore));   
                                 }
                                 else {

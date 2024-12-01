@@ -31,21 +31,18 @@ public class Client {
         if(rispostaObj instanceof Message) {
             risposta = (Message) rispostaObj;
         }
-
-        System.out.println("StatusCode richiesta INIZIO: " + risposta.getStatusCode());
-
+        
         if(risposta.getStatusCode() != 200)  //Controllo che la connessione sia stata accettata
-            System.exit(0);   
+            System.out.println("Errore inviato dal server");  // System.out.println("StatusCode richiesta INIZIO: " + risposta.getStatusCode());
       
-        String playerId = risposta.getPlayerId();
-        System.out.println("PlayerId " + playerId);
+        String playerId = risposta.getPlayerId();  
+        System.out.println("Sei il giocatore " + playerId);
+        
+    //Partita   
         Giocatore giocatore = new Giocatore();
-
-    //Partita
         out.writeObject(new Message("TURNO", playerId, giocatore));
-        System.out.println("prova");
+        
         risposta = (Message) in.readObject();
-        System.out.println(risposta.getStatusCode());
         if(risposta.getStatusCode() != 200)
             System.out.println("Errore inviato dal server");
         giocatore = (Giocatore) risposta.getOggetto();
@@ -53,9 +50,8 @@ public class Client {
     //INIZIO DEL MIO TURNO
         Stato statoPartita = new Stato(null, null, null);
         out.writeObject(new Message("STATO", playerId, statoPartita));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
-        risposta = (Message) in.readObject();
-        System.out.println(risposta.getPlayerId());
-        System.out.println("Risposta di STATO: " + risposta.getStatusCode());
+        
+        risposta = (Message) in.readObject();  //System.out.println("Risposta di STATO: " + risposta.getStatusCode());
         
         if(risposta.getStatusCode() != 200)  //Se la risposta è un errore rifaccio la richiesta
             System.out.println("Errore inviato dal server");
@@ -63,19 +59,10 @@ public class Client {
         if(risposta.getOggetto() instanceof Stato)
             statoPartita = (Stato) risposta.getOggetto();
 
-        // ArrayList<Giocatore> giocatori = new ArrayList<Giocatore>();
-        // Mano dealerMano = new Mano();
-
-      /*for(int i=0; i < giocatori.size(); i++){
-            if(giocatori.get(i).getPlayerId().equals("P" + i))
-                giocatore = (Giocatore) giocatori.get(i);
-        }*/
-
         // dealerMano = statoPartita.getDealerMano();
 
         //Stampa dello stato della partita
         System.out.println(statoPartita.toString());
-        System.out.println("Mano giocatore: " + giocatore.getMano());
 
     //Scelta mosse
         Giocatore giocatore2 = null;
@@ -111,11 +98,11 @@ public class Client {
         Message risposta = null;
         boolean insurance = false;
 
-        while(!mossa.equals("STAY")){
+        System.out.println("\nTua mano: \n" + giocatore.getMano().toString());  //Stampa mano
+        while(!giocatore.isStayed()){
             
-            System.out.println("Tua mano: \n" + giocatore.getMano().toString());  //Stampa mano
             System.out.println("Inserisci quale mossa vuoi fare: HIT | STAY | DOUBLE | SPLIT | INSURANCE");  //Chiedo quale azione vuole eseguire e al limite la invio al server
-            mossa = input.readLine();
+            mossa = input.readLine().toUpperCase();
             risposta = null;
 
             switch(mossa){
@@ -123,8 +110,15 @@ public class Client {
                     out.writeObject(new Message("HIT", giocatore.getPlayerId(), null));
                     risposta = (Message) in.readObject();  //Nel messaggio ricevo la carta che ho chiesto
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
-                        if(risposta.getOggetto() instanceof Carta)
+                        if(risposta.getOggetto() instanceof Carta){
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
+                            out.writeObject(new Message("PUNTEGGIO", giocatore.getPlayerId(), null));
+                            
+                            Message rispostaPunteggio = (Message) in.readObject();
+                            Integer punteggio = (Integer) rispostaPunteggio.getOggetto();
+                            if(punteggio >= 21)  //Se ho 21 o ho sballato 'sto' in automatico
+                                giocatore.stay(true);
+                        }
                     }
                     break;
 
@@ -133,6 +127,7 @@ public class Client {
                     risposta = (Message) in.readObject();
                     if(risposta.getStatusCode() != 200)
                         System.out.println("Errore del server dopo richiesta STAY");
+                    giocatore.stay(true);
                     break;
 
                 case "DOUBLE":
@@ -141,7 +136,7 @@ public class Client {
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
                         if(risposta.getOggetto() instanceof Carta)
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
-                        mossa = "STAY";  //'Sto' in automatico
+                        giocatore.stay(true);//'Sto' in automatico
                     }
                     break;
 
@@ -167,7 +162,7 @@ public class Client {
                     out.writeObject(new Message("INSURANCE", giocatore.getPlayerId(), null));
                     risposta = (Message) in.readObject();
                     if(risposta.getStatusCode() != 200)
-                        System.exit(0);
+                        System.out.println("Non puoi effettuare un INSURANCE in questo momento");
                     break;
 
                 default:
@@ -179,6 +174,8 @@ public class Client {
                     System.out.println("Azione non consentita\n");
                 }
             }
+            
+            System.out.println("\nTua mano: \n" + giocatore.getMano().toString());  //Stampa mano           
         }
     }
 }
