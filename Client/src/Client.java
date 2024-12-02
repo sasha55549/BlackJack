@@ -8,6 +8,13 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+//TODO richiesta turno in polling
+//TODO invio puntata
+//TODO gestione FINE
+//TODO richiesta VITTORIA 
+//TODO oscuramento ultima carta dealer
+//TODO insurance aggiunto a giocatore
+
 public class Client {
     public static final int PORT = 50000;
     private ClientService clientService;
@@ -37,21 +44,12 @@ public class Client {
       
         String playerId = risposta.getPlayerId();  
         System.out.println("Sei il giocatore " + playerId);
-        
-    //Partita   
-        Giocatore giocatore = new Giocatore();
-        out.writeObject(new Message("TURNO", playerId, giocatore));
-        
-        risposta = (Message) in.readObject();
-        if(risposta.getStatusCode() != 200)
-            System.out.println("Errore inviato dal server");
-        giocatore = (Giocatore) risposta.getOggetto();
 
     //INIZIO DEL MIO TURNO
         Stato statoPartita = new Stato(null, null, null);
-        out.writeObject(new Message("STATO", playerId, statoPartita));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
+        client.clientService.sendMessage(new Message("STATO", playerId, statoPartita));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
         
-        risposta = (Message) in.readObject();  //System.out.println("Risposta di STATO: " + risposta.getStatusCode());
+        risposta = (Message) client.clientService.recieveMessage();  //System.out.println("Risposta di STATO: " + risposta.getStatusCode());
         
         if(risposta.getStatusCode() != 200)  //Se la risposta è un errore rifaccio la richiesta
             System.out.println("Errore inviato dal server");
@@ -64,24 +62,33 @@ public class Client {
         //Stampa dello stato della partita
         System.out.println(statoPartita.toString());
 
+    //Partita   
+        Giocatore giocatore = new Giocatore();
+        client.clientService.sendMessage(new Message("TURNO", playerId, null));
+        risposta = (Message) client.clientService.recieveMessage();
+
+        if(risposta.getStatusCode() != 200)
+            System.out.println("Errore inviato dal server");
+        giocatore = (Giocatore) risposta.getOggetto();
+
     //Scelta mosse
         Giocatore giocatore2 = null;
-        giocata(giocatore, giocatore2, input, out, in);
+        giocata(giocatore, giocatore2, input, out, in, client);
         
         if(giocatore2 != null)
-            giocata(giocatore2, null, input, out, in);
+            giocata(giocatore2, null, input, out, in, client);
 
     //Richiesta se ho vinto o no
-        out.writeObject(new Message("VITTORIA", playerId, null));
-        risposta = (Message) in.readObject();
+        client.clientService.sendMessage(new Message("VITTORIA", playerId, null));
+        risposta = (Message) client.clientService.recieveMessage();
         if(risposta.getStatusCode() == 200)
             System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di vittoria
         else
             System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di sconfitta
 
     //Richiesta dello stato della partita
-        out.writeObject(new Message("STATO", playerId, statoPartita));
-        risposta = (Message) in.readObject();
+        client.clientService.sendMessage(new Message("STATO", playerId, statoPartita));
+        risposta = (Message) client.clientService.recieveMessage();
         if(risposta.getStatusCode() == 200)
             System.out.println(((Stato) risposta.getOggetto()).toString());
         else   
@@ -93,7 +100,7 @@ public class Client {
         input.close();
     }
 
-    public static void giocata(Giocatore giocatore, Giocatore giocatore2, BufferedReader input, ObjectOutputStream out, ObjectInputStream in) throws Exception{
+    public static void giocata(Giocatore giocatore, Giocatore giocatore2, BufferedReader input, ObjectOutputStream out, ObjectInputStream in, Client client) throws Exception{
         String mossa = "";
         Message risposta = null;
         boolean insurance = false;
@@ -107,14 +114,14 @@ public class Client {
 
             switch(mossa){
                 case "HIT":
-                    out.writeObject(new Message("HIT", giocatore.getPlayerId(), null));
-                    risposta = (Message) in.readObject();  //Nel messaggio ricevo la carta che ho chiesto
+                    client.clientService.sendMessage(new Message("HIT", giocatore.getPlayerId(), null));
+                    risposta = (Message) client.clientService.recieveMessage();  //Nel messaggio ricevo la carta che ho chiesto
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
                         if(risposta.getOggetto() instanceof Carta){
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
-                            out.writeObject(new Message("PUNTEGGIO", giocatore.getPlayerId(), null));
+                            client.clientService.sendMessage(new Message("PUNTEGGIO", giocatore.getPlayerId(), null));
                             
-                            Message rispostaPunteggio = (Message) in.readObject();
+                            Message rispostaPunteggio = (Message) client.clientService.recieveMessage();
                             Integer punteggio = (Integer) rispostaPunteggio.getOggetto();
                             if(punteggio >= 21)  //Se ho 21 o ho sballato 'sto' in automatico
                                 giocatore.stay(true);
@@ -123,16 +130,16 @@ public class Client {
                     break;
 
                 case "STAY":
-                    out.writeObject(new Message("STAY", giocatore.getPlayerId(), giocatore));
-                    risposta = (Message) in.readObject();
+                    client.clientService.sendMessage(new Message("STAY", giocatore.getPlayerId(), giocatore));
+                    risposta = (Message) client.clientService.recieveMessage();
                     if(risposta.getStatusCode() != 200)
                         System.out.println("Errore del server dopo richiesta STAY");
                     giocatore.stay(true);
                     break;
 
                 case "DOUBLE":
-                    out.writeObject(new Message("DOUBLE", giocatore.getPlayerId(), null));
-                    risposta = (Message) in.readObject();  //Nel messaggio ricevo la carta aggiuntiva
+                    client.clientService.sendMessage(new Message("DOUBLE", giocatore.getPlayerId(), null));
+                    risposta = (Message) client.clientService.recieveMessage();  //Nel messaggio ricevo la carta aggiuntiva
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
                         if(risposta.getOggetto() instanceof Carta)
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
@@ -141,8 +148,8 @@ public class Client {
                     break;
 
                 case "SPLIT":
-                    out.writeObject(new Message("SPLIT", giocatore.getPlayerId(), null));
-                    risposta = (Message) in.readObject();
+                    client.clientService.sendMessage(new Message("SPLIT", giocatore.getPlayerId(), null));
+                    risposta = (Message) client.clientService.recieveMessage();
                     if(risposta.getStatusCode() == 200){
                         if(risposta.getOggetto() instanceof Giocatore[]){
                             Giocatore[] giocatori = (Giocatore[]) risposta.getOggetto();
@@ -158,11 +165,11 @@ public class Client {
                         break;
                     }
 
-                    insurance = true;
-                    out.writeObject(new Message("INSURANCE", giocatore.getPlayerId(), null));
-                    risposta = (Message) in.readObject();
+                    client.clientService.sendMessage(new Message("INSURANCE", giocatore.getPlayerId(), null));
+                    risposta = (Message) client.clientService.recieveMessage();
                     if(risposta.getStatusCode() != 200)
                         System.out.println("Non puoi effettuare un INSURANCE in questo momento");
+                    insurance = true;
                     break;
 
                 default:
