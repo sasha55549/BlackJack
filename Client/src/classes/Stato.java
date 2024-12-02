@@ -43,4 +43,20 @@ public class Stato  implements Serializable {
         this.punteggi = punteggi;
     }
 
+    @Override
+    public String toString(){
+        String stringStato = "";
+
+        for(Giocatore giocatore : giocatori){
+            stringStato += "Mano giocatore " + giocatore.getPlayerId() + ": " + giocatore.getMano().toString() + 
+                           " punteggio: " + punteggi.get(giocatore.getPlayerId()) +"\n";
+        }
+
+        ArrayList<Carta> manoDealerOscurata = dealerMano;
+        manoDealerOscurata.remove(manoDealerOscurata.get(manoDealerOscurata.size()));
+        stringStato += "Mano dealer: " + manoDealerOscurata.toString();
+
+        return stringStato;
+    }
+
 }
