@@ -3,7 +3,7 @@ package classes;
 import java.io.Serializable;
 
 
-public class Carta implements Serializable {
+public class Carta implements Serializable{
 
     private static final long serialVersionUID = -5527489521L;
     public static final String[] VALORI = new String[]{"2","3","4","5","6","7","8","9","10","J","Q","K","A"};

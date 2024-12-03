@@ -1,0 +1,10 @@
+Scaletta
+
+Client:                                                                                     Server:
+Connette al Server                                                                          Accetta la connessione(o varianti)
+Aspetta inizio partita(polling)                                                             Aspetta gli altri giocatori
+Inizia partita                                                                              Inizia partita
+Richiede Mano                                                                               Invia la Mano
+Aspetta il suo turno                                                                        Gestisce le richieste degli altri player
+Decide la giocata                                                                           Accontenta il giocatore
+Gestisce la vincita o sconfitta                                                             Gestisce la vincita o sconfitta
