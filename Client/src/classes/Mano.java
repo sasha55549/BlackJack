@@ -6,7 +6,7 @@ public class Mano extends ArrayList<Carta> {
 
     public Mano(){}
 
-    public void removeLast(){
+    public void RemoveLast(){
         this.remove(this.size()-1);
     }
 

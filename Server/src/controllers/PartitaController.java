@@ -165,9 +165,20 @@ public class PartitaController extends Thread {
         String method = message.getMethod();
         Giocatore giocatore = giocatori2.get(message.getPlayerId());
         switch (method) {
+            case "FINE":
+                if (fine) return new Message(200, giocatore.getPlayerId());
+                return new Message(300,giocatore.getPlayerId());
+
+            case "PUNTATA":
+                if (giocatore.getPuntata()==0 && ((Integer)message.getOggetto())<=giocatore.getBilancio()) {
+                        giocatore.setPuntata((Integer)message.getOggetto());
+                        giocatore.setBilancio(giocatore.getBilancio()-giocatore.getPuntata());
+                        return new Message(200,giocatore.getPlayerId());
+                }
+                else return new Message(300,giocatore.getPlayerId());
             case "STATO":
                 Mano dealerMano = (Mano)dealer.getMano().clone();
-                if (!allPlayersStayed()) dealerMano.removeLast();
+                if (!allPlayersStayed()) dealerMano.RemoveLast();
                 return new Message(200,message.getPlayerId(),new Stato(giocatori,dealerMano,punteggi));
 
             case "HIT":
@@ -235,15 +246,13 @@ public class PartitaController extends Thread {
             return new Message(300, giocatore.getPlayerId());
 
             case "VITTORIA":
-
                     switch (verificaVincita(giocatore)) {
                         case 1:
-                            return new Message(211, giocatore.getPlayerId(), giocatore.getPuntata() + ((giocatore.getPuntata()/2)*3));
-                            
+                            return new Message(211, giocatore.getPlayerId(), calcolaVincita(giocatore));
                         case 0:
-                            return new Message(210, giocatore.getPlayerId(), giocatore.getPuntata() + ((giocatore.getPuntata()/2)*3));
+                            return new Message(210, giocatore.getPlayerId(), calcolaVincita(giocatore));
                         case -1:
-                            return new Message(209, giocatore.getPlayerId());
+                            return new Message(209, giocatore.getPlayerId(), calcolaVincita(giocatore));
                         default:
                             break;
                     }
@@ -264,15 +273,38 @@ public class PartitaController extends Thread {
 
     private int verificaVincita(Giocatore giocatore){
         int vincita = 1;
-        if (!fine || (punteggi.get(giocatore.getPlayerId())<punteggi.get(dealer.getPlayerId()) && punteggi.get(dealer.getPlayerId())<=21) || punteggi.get(giocatore.getPlayerId())>21) return -1;
-        if ((punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(giocatore.getPlayerId())<=21 ) || (hasBlackjack(giocatore) && !hasBlackjack(dealer))) return 1;
-        if (punteggi.get(giocatore.getPlayerId())==punteggi.get(dealer.getPlayerId())) return 0;
+            if (!fine || (punteggi.get(giocatore.getPlayerId())<punteggi.get(dealer.getPlayerId()) && punteggi.get(dealer.getPlayerId())<=21) || punteggi.get(giocatore.getPlayerId())>21) return -1;
+            if ((punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(giocatore.getPlayerId())<=21 ) || (hasBlackjack(giocatore) && !hasBlackjack(dealer))) return 1;
+            if (punteggi.get(giocatore.getPlayerId())==punteggi.get(dealer.getPlayerId()) || (hasBlackjack(giocatore) && hasBlackjack(dealer))) return 0;
+        
         return vincita;
     }
 
     private double calcolaVincita(Giocatore giocatore){
+        double puntata =  giocatore.getPuntata();
         double vincita = 0;
-        //TODO
+        double insurance = 0;
+        if (giocatore.getInsurance()) {
+            insurance=puntata/3;
+            puntata-=insurance;
+            if (hasBlackjack(dealer)) {
+                vincita=insurance*3;
+                if (hasBlackjack(giocatore)) vincita+=puntata;
+                return vincita;
+            }
+        } 
+            if (hasBlackjack(giocatore) && !hasBlackjack(dealer)) {
+                vincita=puntata+puntata*3/2;
+                return vincita;
+            }
+            if (punteggi.get(giocatore.getPlayerId())==punteggi.get(dealer.getPlayerId()) || (hasBlackjack(giocatore) && hasBlackjack(dealer))) {
+                vincita=puntata;
+                return vincita;
+            }
+            if (punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(giocatore.getPlayerId())<=21 ) {
+                vincita=puntata*2;
+                return vincita;
+            }
         return vincita;
     }
 

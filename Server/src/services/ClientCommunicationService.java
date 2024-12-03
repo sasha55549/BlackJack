@@ -57,10 +57,7 @@ public class ClientCommunicationService extends Thread{
                                 clientService.sendMessage(new Message(200, giocatore.getPlayerId()));
                                 // clientService.sendMessage(new Message(200, giocatore.getPlayerId(), dealer.getMano()));
                             }
-                        } else if (input.getMethod().equals("FINE")) {
-                            if (partita.getFine()) clientService.sendMessage(new Message(200, giocatore.getPlayerId()));
-                            else clientService.sendMessage(new Message(300, giocatore.getPlayerId()));
-                        }
+                        } 
                          else {
                             clientService.sendMessage(partita.turno(input));
                         }
