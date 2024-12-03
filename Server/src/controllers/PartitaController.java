@@ -28,6 +28,7 @@ public class PartitaController extends Thread {
     private ArrayList<ObjectInputStream> inList;
     private ArrayList<ObjectOutputStream> outList;
     private ArrayList<Socket> sockets;
+    private boolean fine = false;
 
     public PartitaController (ArrayList<Socket> sockets, ArrayList<ObjectInputStream> inList, ArrayList<ObjectOutputStream> outList){
         this.giocatori = new ArrayList<Giocatore>();
@@ -38,7 +39,7 @@ public class PartitaController extends Thread {
         this.inList = inList;
         this.outList = outList;
         this.sockets = sockets;
-
+        
         this.dealer = new Dealer("D1",new Mano(),false);
         this.punteggi.put("D1",0);
 
@@ -157,15 +158,19 @@ public class PartitaController extends Thread {
         Giocatore giocatore = giocatori2.get(message.getPlayerId());
         switch (method) {
             case "STATO":
-                return new Message(200,message.getPlayerId(),new Stato(giocatori,dealer.getMano(),punteggi));
+                Mano dealerMano = (Mano)dealer.getMano().clone();
+                if (!allPlayersStayed()) dealerMano.removeLast();
+                return new Message(200,message.getPlayerId(),new Stato(giocatori,dealerMano,punteggi));
 
             case "HIT":
                 if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21) {
                     Carta carta = mazzo.remove(0);
                     giocatore.hit(carta);
                     calcolaPunteggi();
-                    if (punteggi.get(giocatore.getPlayerId())>=21) 
+                    if (punteggi.get(giocatore.getPlayerId())>=21) {
                         giocatore.stay();
+                        if (i.hasNext()) currentPlayer = i.next().getPlayerId();
+                    }
                     return new Message(200,giocatore.getPlayerId(), carta);
                 }
                 return new Message(300, giocatore.getPlayerId());
@@ -175,14 +180,20 @@ public class PartitaController extends Thread {
                 return new Message(200, giocatore.getPlayerId(), punteggi.get(giocatore.getPlayerId()));
 
             case "STAY":
+                if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<=21) {
                 giocatore.stay();
+                if (i.hasNext()) currentPlayer = i.next().getPlayerId();
                 return new Message(200, giocatore.getPlayerId());
+                }
+                return new Message(300,giocatore.getPlayerId());
 
             case "DOUBLE":
-                if(message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21 && giocatore.getBilancio()-giocatore.getPuntata()>=0) {
+                if(message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21 && giocatore.getBilancio()-giocatore.getPuntata()>=0 && giocatore.getMano().size()==2) {
                     Carta carta = mazzo.remove(0);
                     giocatore.doublePlay(carta);
                     calcolaPunteggi();
+                    giocatore.stay();
+                    if (i.hasNext()) currentPlayer = i.next().getPlayerId();
                     return new Message(200, giocatore.getPlayerId(), carta);
                 }
                 return new Message(300, giocatore.getPlayerId());
@@ -251,6 +262,26 @@ public class PartitaController extends Thread {
         return null;
     }
 
+    private boolean hasBlackjack(Giocatore giocatore){
+        boolean blackjack = false;
+        if (punteggi.get(giocatore.getPlayerId())==21 && giocatore.getMano().size()==2) blackjack=true;
+        return blackjack;
+    }
+
+    private int verificaVincita(Giocatore giocatore){
+        int vincita = 1;
+        if (!fine || (punteggi.get(giocatore.getPlayerId())<punteggi.get(dealer.getPlayerId()) && punteggi.get(dealer.getPlayerId())<=21) || punteggi.get(giocatore.getPlayerId())>21) return -1;
+        if ((punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(giocatore.getPlayerId())<=21 ) || (hasBlackjack(giocatore) && !hasBlackjack(dealer))) return 1;
+        if (punteggi.get(giocatore.getPlayerId())==punteggi.get(dealer.getPlayerId())) return 0;
+        return vincita;
+    }
+
+    private double calcolaVincita(Giocatore giocatore){
+        double vincita = 0;
+        //TODO
+        return vincita;
+    }
+
     private void distribuisciCarte(){
         for (Giocatore giocatore : giocatori) {
             giocatore.hit(mazzo.remove(0));
@@ -271,11 +302,16 @@ public class PartitaController extends Thread {
         connessioni();
         currentPlayer = i.next().getPlayerId();
         while (!allPlayersStayed()) {
-           
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
             dealer.hit(mazzo.remove(0));
             calcolaPunteggi();
+        }
+        for (Giocatore giocatore : giocatori) {
+            verificaVincita(giocatore);
+        }
+        fine=true;
+        while (fine) {
         }
     }
     
