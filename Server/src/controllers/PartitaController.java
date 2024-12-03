@@ -330,12 +330,11 @@ public class PartitaController extends Thread {
         distribuisciCarte();
         calcolaPunteggi();
         connessioni();   
-        System.out.println("prova1");
         boolean allPlayersStayed = allPlayersStayed();
         while (!allPlayersStayed) {
             allPlayersStayed = allPlayersStayed();
             }
-        System.out.println("prova3");
+        calcolaPunteggi();
         while (punteggi.get(dealer.getPlayerId())<17) {
             dealer.hit(mazzo.remove(0));
             calcolaPunteggi();
