@@ -115,10 +115,13 @@ public class Client {
     //Richiesta se ho vinto o no
         client.clientService.sendMessage(new Message("VITTORIA", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
-        if(risposta.getStatusCode() == 200)
-            System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di vittoria
-        else if(risposta.getOggetto().toString() != null)
-            System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di sconfitta
+        if(risposta.getStatusCode() == 210){
+            System.out.println("Hai vinto");
+        } else if(risposta.getStatusCode() == 211)
+            System.out.println("Hai perso");
+        else 
+            System.out.println("Pareggio");
+
 
     //Richiesta dello stato della partita
         client.clientService.sendMessage(new Message("STATO", playerId, statoPartita));

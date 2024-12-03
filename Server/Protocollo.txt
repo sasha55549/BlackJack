@@ -57,7 +57,9 @@ Response_code:
 
 	200: ok
 	201: non finito
+	209: PAREGGIO
 	210: VITTORIA
+	211: SCONFITTA
 
 	300: no
 
