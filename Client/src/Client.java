@@ -7,10 +7,7 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-//TODO richiesta turno in polling
 //TODO invio puntata
-//TODO gestione FINE
-//TODO richiesta VITTORIA 
 //TODO insurance aggiunto a giocatore
 
 public class Client {
@@ -44,9 +41,22 @@ public class Client {
         String playerId = risposta.getPlayerId();  
         System.out.println("Sei il giocatore " + playerId);
 
+
+        System.out.println("Inserisci la puntata: ");
+        Integer puntata = Integer.parseInt(input.readLine());
+
+        client.clientService.sendMessage(new Message("PUNTATA", playerId, puntata));
+        risposta = client.clientService.recieveMessage();
+        while(risposta.getStatusCode() != 200){
+            System.out.println("Inserisci la puntata: ");
+            puntata = Integer.parseInt(input.readLine());
+            client.clientService.sendMessage(new Message("PUNTATA", playerId, puntata));
+            risposta = (Message) client.clientService.recieveMessage();
+        }
+
     //INIZIO DEL MIO TURNO
         Stato statoPartita = new Stato(null, null, null);
-        client.clientService.sendMessage(new Message("STATO", playerId, statoPartita));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
+        client.clientService.sendMessage(new Message("STATO", playerId, null));  //Chiedo al server le carte, che verranno inserite nell'attributo mano
         
         risposta = (Message) client.clientService.recieveMessage();  //System.out.println("Risposta di STATO: " + risposta.getStatusCode());
         
@@ -118,7 +128,7 @@ public class Client {
         client.clientService.sendMessage(new Message("VITTORIA", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
         if(risposta.getStatusCode() == 211){
-            System.out.println("Hai vinto: " + (Integer) risposta.getOggetto());
+            System.out.println("Hai vinto: " + (Double) risposta.getOggetto());
         } else if(risposta.getStatusCode() == 209)
             System.out.println("Hai perso");
         else 

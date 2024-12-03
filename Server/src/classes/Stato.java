@@ -3,10 +3,8 @@ package classes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.io.Serializable;
 
-
-public class Stato implements Serializable {
+public class Stato  implements Serializable {
 
     //TODO IMPLEMENTA CLASSE STATO DEL GIOCO
     private static final long serialVersionUID = 5598621473L;
@@ -52,7 +50,6 @@ public class Stato implements Serializable {
         this.punteggi = punteggi;
     }
 
-
     @Override
     public String toString(){
         String stringStato = "";
@@ -62,7 +59,7 @@ public class Stato implements Serializable {
                            " punteggio: " + punteggi.get(giocatore.getPlayerId()) +"\n";
         }
 
-        stringStato += "Mano dealer: " + dealerMano.toString() + " punteggio: " + punteggi.get("D1");
+        stringStato += "Mano dealer: " + dealerMano.toString() + " punteggio:  " + punteggi.get("D1");
 
         return stringStato;
     }
