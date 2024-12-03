@@ -112,6 +112,7 @@ public class Client {
             }
             client.clientService.sendMessage(new Message("FINE", playerId, null));
             risposta = (Message) client.clientService.recieveMessage();
+            System.out.println(risposta.getStatusCode());
         }
 
     //Richiesta se ho vinto o no
@@ -237,7 +238,8 @@ public class Client {
 
             giocatore = statoPartita.getGiocatore(giocatore.getPlayerId());
             
-            System.out.println("\nTua mano: \n" + giocatore.getMano().toString());  //Stampa mano           
+            System.out.println("\nTua mano: \n" + giocatore.getMano().toString());  //Stampa mano      
+            System.out.println("Punteggio: "+statoPartita.getPunteggi().get(giocatore.getPlayerId()));     
         }
     }
 }
