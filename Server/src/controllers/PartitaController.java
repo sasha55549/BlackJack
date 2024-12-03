@@ -179,7 +179,7 @@ public class PartitaController extends Thread {
             case "STATO":
                 Mano dealerMano = (Mano)dealer.getMano().clone();
                 if (!allPlayersStayed()) dealerMano.RemoveLast();
-                return new Message(200,message.getPlayerId(),new Stato(giocatori,dealerMano,punteggi));
+                return new Message(200,message.getPlayerId(),new Stato(giocatori,dealerMano,(HashMap<String,Integer>)punteggi.clone()));
 
             case "HIT":
                 if (message.getPlayerId().equalsIgnoreCase(currentPlayer) && !giocatore.isStayed() && punteggi.get(giocatore.getPlayerId())<21) {
