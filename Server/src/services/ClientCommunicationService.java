@@ -15,7 +15,7 @@ public class ClientCommunicationService extends Thread{
     private ClientService clientService;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private boolean turno;
+    //private boolean turno;
     private boolean iniziata;
     private Giocatore giocatore;
     private Dealer dealer;
@@ -24,12 +24,12 @@ public class ClientCommunicationService extends Thread{
     public ClientCommunicationService() {
 
     }
-    public ClientCommunicationService(PartitaController partita, Socket socket, boolean turno, boolean iniziata, Giocatore giocatore, Dealer dealer, ObjectInputStream in, ObjectOutputStream out) {
+    public ClientCommunicationService(PartitaController partita, Socket socket, boolean iniziata, Giocatore giocatore, Dealer dealer, ObjectInputStream in, ObjectOutputStream out) {
         this.partita = partita;
         this.clientService = new ClientService(socket, in, out);
         this.giocatore = giocatore;
         this.dealer = dealer;
-        this.turno = turno;
+        //this.turno = turno;
         this.iniziata = iniziata;
         this.in = in;
         this.out = out;
@@ -46,7 +46,7 @@ public class ClientCommunicationService extends Thread{
                         if(ciao instanceof Message) {
                             Message input = (Message) ciao;
                             if(input.getMethod().equals("TURNO")) {
-                                if(turno) {
+                                if(partita.getCurrentPlayer().equalsIgnoreCase(giocatore.getPlayerId())) {
                                     clientService.sendMessage(new Message(200, giocatore.getPlayerId(), giocatore));   
                                 }
                                 else {
@@ -57,7 +57,11 @@ public class ClientCommunicationService extends Thread{
                                 clientService.sendMessage(new Message(200, giocatore.getPlayerId()));
                                 // clientService.sendMessage(new Message(200, giocatore.getPlayerId(), dealer.getMano()));
                             }
-                        } else {
+                        } else if (input.getMethod().equals("FINE")) {
+                            if (partita.getFine()) clientService.sendMessage(new Message(200, giocatore.getPlayerId()));
+                            else clientService.sendMessage(new Message(300, giocatore.getPlayerId()));
+                        }
+                         else {
                             clientService.sendMessage(partita.turno(input));
                         }
                     }
@@ -68,6 +72,7 @@ public class ClientCommunicationService extends Thread{
         }
     }
 
+    /*
     public boolean getTurno() {
         return this.turno;
     }
@@ -75,6 +80,7 @@ public class ClientCommunicationService extends Thread{
     public void setTurno(boolean turno) {
         this.turno = turno;
     }
+    */
     
     
     public boolean getIniziata() {
