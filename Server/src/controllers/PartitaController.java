@@ -165,7 +165,7 @@ public class PartitaController extends Thread {
                     giocatore.hit(carta);
                     calcolaPunteggi();
                     if (punteggi.get(giocatore.getPlayerId())>=21) 
-                        giocatore.stay(true);
+                        giocatore.stay();
                     return new Message(200,giocatore.getPlayerId(), carta);
                 }
                 return new Message(300, giocatore.getPlayerId());
@@ -175,7 +175,7 @@ public class PartitaController extends Thread {
                 return new Message(200, giocatore.getPlayerId(), punteggi.get(giocatore.getPlayerId()));
 
             case "STAY":
-                giocatore.stay(true);
+                giocatore.stay();
                 return new Message(200, giocatore.getPlayerId());
 
             case "DOUBLE":
@@ -197,10 +197,10 @@ public class PartitaController extends Thread {
                     split.hit(mazzo.remove(0));
                     calcolaPunteggi();
                     if(punteggi.get(giocatore.getPlayerId())>21) {
-                        giocatore.stay(true);
+                        giocatore.stay();
                     }
                     if(punteggi.get(split.getPlayerId())>21) {
-                        split.stay(true);
+                        split.stay();
                     }
                     Giocatore[] giocatoriTemp = {giocatore, split};
                     return new Message(200, giocatore.getPlayerId(), giocatoriTemp);
@@ -216,11 +216,33 @@ public class PartitaController extends Thread {
             return new Message(300, giocatore.getPlayerId());
 
             case "FINE":
-                
+                if(message.getPlayerId().equalsIgnoreCase(currentPlayer)) {
+                    boolean stayed = true;
+                    for (Giocatore giocatore2 : giocatori) {
+                        if(!giocatore2.isStayed()) {
+                            stayed = false;
+                        }
+                    }
+                    if(stayed) {
+                        return new Message(200, giocatore.getPlayerId());
+                    }
+                    return new Message(300, giocatore.getPlayerId());
+                }
                 break;
 
             case "VITTORIA":
-                
+                if(message.getPlayerId().equalsIgnoreCase(currentPlayer)) {
+                    if(punteggi.get(giocatore.getPlayerId())>21 || punteggi.get(giocatore.getPlayerId())<21 && punteggi.get(dealer.getPlayerId())<21 && punteggi.get(dealer.getPlayerId())>punteggi.get(giocatore.getPlayerId())) {
+                        return new Message(211, giocatore.getPlayerId()); //TODO: Aggiungere condizione assicurazione
+                    }
+                    if((punteggi.get(giocatore.getPlayerId())>punteggi.get(dealer.getPlayerId()) && punteggi.get(dealer.getPlayerId())<21) || punteggi.get(dealer.getPlayerId())>21) {
+                        if(punteggi.get(giocatore.getPlayerId()) == 21) {
+                            return new Message(210, giocatore.getPlayerId(), giocatore.getPuntata() + ((giocatore.getPuntata()/2)*3)); // Pagamento 3 a 2
+                        }
+                        return new Message(210, giocatore.getPlayerId(), giocatore.getPuntata()*2); // Pagamento 2 a 1
+                    }
+                    //TODO: Gestione pareggio
+                }
                 break;
 
             default:

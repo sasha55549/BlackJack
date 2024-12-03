@@ -3,7 +3,6 @@ package classes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.io.Serializable;
 
 public class Stato  implements Serializable {
 

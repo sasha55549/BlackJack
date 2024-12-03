@@ -4,7 +4,6 @@ import services.ClientService;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -131,7 +130,7 @@ public class Client {
                             Message rispostaPunteggio = (Message) client.clientService.recieveMessage();
                             Integer punteggio = (Integer) rispostaPunteggio.getOggetto();
                             if(punteggio >= 21)  //Se ho 21 o ho sballato 'sto' in automatico
-                                giocatore.stay(true);
+                                giocatore.stay();
                         }
                     }
                     break;
@@ -141,7 +140,7 @@ public class Client {
                     risposta = (Message) client.clientService.recieveMessage();
                     if(risposta.getStatusCode() != 200)
                         System.out.println("Errore del server dopo richiesta STAY");
-                    giocatore.stay(true);
+                    giocatore.stay();
                     break;
 
                 case "DOUBLE":
@@ -150,7 +149,7 @@ public class Client {
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
                         if(risposta.getOggetto() instanceof Carta)
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
-                        giocatore.stay(true);//'Sto' in automatico
+                        giocatore.stay();//'Sto' in automatico
                     }
                     break;
 

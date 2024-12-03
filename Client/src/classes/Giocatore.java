@@ -1,30 +1,26 @@
 package classes;
 
 import java.io.Serializable;
-import java.net.Socket;
-
 
 public class Giocatore implements Serializable {
 
-    private static final long serialVersionUID = 7687915238L;
+    private static final long serialVersionUID = -7687915238L;
 
     protected String playerId;
     protected double bilancio;
     protected int puntata;
     protected Mano mano;
-    protected Socket playerSocket;
     protected boolean stayed;
     private boolean insurance;
 
     public Giocatore() {
     }
 
-    public Giocatore(String playerId, double bilancio, int puntata, Mano mano, Socket playerSocket, boolean stayed) {
+    public Giocatore(String playerId, double bilancio, int puntata, Mano mano, boolean stayed) {
         this.playerId = playerId;
         this.bilancio = bilancio;
         this.puntata = puntata;
         this.mano = mano;
-        this.playerSocket = playerSocket;
         this.stayed = stayed;
     }
     
@@ -54,17 +50,13 @@ public class Giocatore implements Serializable {
     public Mano getMano() {
         return mano;
     }
-    
-    public Socket getPlayerSocket() {
-        return this.playerSocket;
-    }
 
     public boolean isStayed() {
         return this.stayed;
     }
 
-    public void stay(boolean stayed) {
-        this.stayed = stayed;
+    public void stay() {
+        stayed = true;
     }
     public void doublePlay(Carta carta) {
         setPuntata(puntata*2);
@@ -74,7 +66,7 @@ public class Giocatore implements Serializable {
     public Giocatore split() {
         bilancio -= puntata;
         puntata*=2;
-        Giocatore giocatore = new Giocatore(playerId+"B", 0, 0, null, playerSocket, stayed);
+        Giocatore giocatore = new Giocatore(playerId+"B", 0, 0, null, stayed);
         giocatore.hit(mano.remove(0));
         return giocatore;
     }
@@ -93,7 +85,6 @@ public class Giocatore implements Serializable {
             ", bilancio='" + getBilancio() + "'" +
             ", puntata='" + getPuntata() + "'" +
             ", mano='" + getMano() + "'" +
-            ", playerSocket='" + getPlayerSocket() + "'" +
             ", stayed='" + isStayed() + "'" +
             "}";
     }

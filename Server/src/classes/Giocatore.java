@@ -1,7 +1,6 @@
 package classes;
 
 import java.io.Serializable;
-import java.net.Socket;
 
 public class Giocatore implements Serializable {
 
@@ -56,8 +55,8 @@ public class Giocatore implements Serializable {
         return this.stayed;
     }
 
-    public void stay(boolean stayed) {
-        this.stayed = stayed;
+    public void stay() {
+        stayed = true;
     }
     public void doublePlay(Carta carta) {
         setPuntata(puntata*2);
