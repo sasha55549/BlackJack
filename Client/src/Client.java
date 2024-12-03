@@ -131,9 +131,9 @@ public class Client {
         if(risposta.getStatusCode() == 211){
             System.out.println("Hai vinto: " + (Double) risposta.getOggetto());
         } else if(risposta.getStatusCode() == 209)
-            System.out.println("Hai perso");
+            System.out.println("Hai perso: (Hai recuperato " + (Double) risposta.getOggetto() + ")");
         else 
-            System.out.println("Pareggio");
+            System.out.println("Pareggio: (Hai recuperato " + (Double) risposta.getOggetto() + ")");
 
 
     //Richiesta dello stato della partita

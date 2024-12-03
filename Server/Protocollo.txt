@@ -1,66 +1,39 @@
 Protocollo:
-	id giocatore + 
-	(100-110 connessione) (200-215 azioni partita) (300-310 debug) (400-410 errori) +
-	contenuto* +
+
+	Richiesta: (Metodo, player_id, contenuto*)
+
+	Risposta: (Response_code, player_id, contenuto*)
+
+	Metodi:
+		INIZIO: chiedo al server se si può iniziare la partita
+		TURNO: chiedo al server se è il mio turno
+		PUNTATA: invio al server la puntata
+
+		STATO: invio una richiesta e il server mi risponde con lo stato della partita -> contenuto: oggetti di tipo Stato
+		PUNTEGGIO: invio al server una richiesta di dirmi il punteggio della mia mano -> contenuto risposta: Integer punteggio
+
+		HIT: invio una carta vuota al server per chiedere una carta -> contenuto: carta
+		STAY: invio al server una richiesta per stare
+		DOUBLE: invio al server una richiesta per il double
+		SPLIT:	invio al server una richiesta per lo split --> mi risponde con l'altro 
+		INSURANCE: invio al server una richiesta di insurance
+
+		FINE: chiedo al server se ho finito (ho sballato oppure mi sono fermato)
+		WIN: chiedo al server se ho vinto
 
 
-	100 Connessione accettata, (server)
-	101 connessione sospesa, (server)
-	102 partita iniziata + playerId, (server)
-	103 connessione rifiutata, (server)
-	104 reindirizzamento, (server)
+	Response_code:
+		100: connessione accettata e partita iniziata
+		101: connessione accettata, ma sospesa (bisogna aspettare l'altro giocatore)
+		103: connessione rifiutata
+		(104: reindirizzamento partita)
 
-	200 setup partita + playerId + puntata(client), (server)
-	201 inizio partita + playerId + carte(server), (client/server)
-	202 inizio turno + playerId, (server)
-	203 hit + playerId + carta(vuota richiesta, piena risposta), (client/server)
-	204 stai + playerId
-	205 raddoppio + playerId + carta(server)
-	206 split + playerId + carta(server)
-	207 assicurazione + playerId + valore
-	208 fine turno + playerId
-	209 fine partita + playerId + status + importo*
-	210 carte dealer + playerId + carte
+		200: ok
+		201: non finito
+		209: SCONFITTA
+		210: PAREGGIO
+		211: VITTORIA
 
-	300-310 admin debug(reserved)
+		300: no
 
-	400 messaggio non valido
-	401 balance issue
-	402 operazione non consentita
-	404 errore
-
-Richiesta: (Metodo, player_id, contenuto*)
-
-Risposta: (Response_code, player_id, contenuto*)
-
-Metodi:
-	INIZIO: chiedo al server se si può iniziare la partita
-	TURNO: chiedo al server se è il mio turno
-
-	STATUS: invio una richiesta e il server mi risponde con lo stato della partita -> contenuto: oggetti di tipo Stato
-	PUNTEGGIO: invio al server una richiesta di dirmi il punteggio della mia mano -> contenuto risposta: Integer punteggio
-	HIT: invio una carta vuota al server per chiedere una carta -> contenuto: carta
-	STAY: invio al server una richiesta per stare
-	DOUBLE: 
-	SPLIT:
-	INSURANCE:
-
-	FINE: chiedo al server se ho finito (ho sballato oppure mi sono fermato)
-	WIN: chiedo al server se ho vinto
-
-
-Response_code:
-	100: connessione accettata e partita iniziata
-	101: connessione accettata, ma sospesa (bisogna aspettare l'altro giocatore)
-	103: connessione rifiutata
-	(104: reindirizzamento partita)
-
-	200: ok
-	201: non finito
-	209: SCONFITTA
-	210: PAREGGIO
-	211: VITTORIA
-
-	300: no
-
-	400: errore
+		400: errore
