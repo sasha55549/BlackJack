@@ -122,7 +122,7 @@ public class Client {
             }
             client.clientService.sendMessage(new Message("FINE", playerId, null));
             risposta = (Message) client.clientService.recieveMessage();
-            System.out.println(risposta.getStatusCode());
+            //System.out.println(risposta.getStatusCode());
         }
 
     //Richiesta se ho vinto o no
