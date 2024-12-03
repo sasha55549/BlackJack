@@ -288,12 +288,12 @@ public class PartitaController extends Thread {
     }
     @Override
     public void run(){
+        currentPlayer = i.next().getPlayerId();
         generaMazzo();
         mischiaMazzo();
         distribuisciCarte();
         calcolaPunteggi();
-        connessioni();
-        currentPlayer = i.next().getPlayerId();
+        connessioni();   
         while (!allPlayersStayed()) {
         }
         while (punteggi.get(dealer.getPlayerId())<17) {
