@@ -44,6 +44,10 @@ public class Giocatore implements Serializable {
         this.puntata = puntata;
     }
 
+    public void setBilancio(double bilancio){
+        this.bilancio=bilancio;
+    }
+
     public void hit(Carta carta) {
         mano.add(carta);
     }
