@@ -11,7 +11,7 @@ public class Stato implements Serializable {
     //TODO IMPLEMENTA CLASSE STATO DEL GIOCO
     private static final long serialVersionUID = 5598621473L;
     private ArrayList<Giocatore> giocatori;
-    private Mano dealerMano; //TODO pensare di nascondere la carta coperta del dealer
+    private Mano dealerMano;
     private HashMap<String,Integer> punteggi;
 
     public Stato(ArrayList<Giocatore> giocatori,Mano dealerMano,HashMap<String,Integer> punteggi){
@@ -55,9 +55,7 @@ public class Stato implements Serializable {
                            " punteggio: " + punteggi.get(giocatore.getPlayerId()) +"\n";
         }
 
-        ArrayList<Carta> manoDealerOscurata = dealerMano;
-        manoDealerOscurata.remove(manoDealerOscurata.get(manoDealerOscurata.size() - 1));
-        stringStato += "Mano dealer: " + manoDealerOscurata.toString();
+        stringStato += "Mano dealer: " + dealerMano.toString();
 
         return stringStato;
     }

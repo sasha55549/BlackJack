@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 public class Client {
     public static final int PORT = 50000;
     private ClientService clientService;
+    @SuppressWarnings("unused")
     public static void main(String[] args) throws Exception {
         Client client = new Client();
         String serverAddress = "localhost";
@@ -62,11 +63,20 @@ public class Client {
 
     //Partita   
         Giocatore giocatore = new Giocatore();
+                
         client.clientService.sendMessage(new Message("TURNO", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
+        while(risposta.getStatusCode() != 200){
+            // System.out.println("Status code richiesta turno: "risposta.getStatusCode());
+            try {
+                Thread.sleep(100 + (int) Math.floor(Math.random() * 400));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            client.clientService.sendMessage(new Message("TURNO", playerId, null));
+            risposta = (Message) client.clientService.recieveMessage();
+        }
 
-        if(risposta.getStatusCode() != 200)
-            System.out.println("Errore inviato dal server");
         giocatore = (Giocatore) risposta.getOggetto();
 
     //Scelta mosse
@@ -74,14 +84,32 @@ public class Client {
         giocata(giocatore, giocatore2, input, out, in, client);
         
         if(giocatore2 != null){
-            client.clientService.sendMessage(new Message("TURNO", giocatore2.getPlayerId(), null));
+            client.clientService.sendMessage(new Message("TURNO", playerId, null));
+            risposta = (Message) client.clientService.recieveMessage();
+            while(risposta.getStatusCode() != 200){
+                // System.out.println("Status code richiesta turno: "risposta.getStatusCode());
+                try {
+                    Thread.sleep(100 + (int) Math.floor(Math.random() * 400));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                client.clientService.sendMessage(new Message("TURNO", playerId, null));
+                risposta = (Message) client.clientService.recieveMessage();
+            }
             giocata(giocatore2, null, input, out, in, client);
         }
 
+
         client.clientService.sendMessage(new Message("FINE", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
-        if(risposta.getStatusCode() != 200){
-            System.out.println("Errore inviato dal server");
+        while(risposta.getStatusCode() != 200){
+            try {
+                Thread.sleep(100 + (int) Math.floor(Math.random() * 400));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            client.clientService.sendMessage(new Message("FINE", playerId, null));
+            risposta = (Message) client.clientService.recieveMessage();
         }
 
     //Richiesta se ho vinto o no
@@ -89,7 +117,7 @@ public class Client {
         risposta = (Message) client.clientService.recieveMessage();
         if(risposta.getStatusCode() == 200)
             System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di vittoria
-        else
+        else if(risposta.getOggetto().toString() != null)
             System.out.println(risposta.getOggetto().toString());  //Il server mi invierà un messaggio di sconfitta
 
     //Richiesta dello stato della partita
