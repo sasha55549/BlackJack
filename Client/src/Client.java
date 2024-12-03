@@ -63,7 +63,8 @@ public class Client {
 
     //Partita   
         Giocatore giocatore = new Giocatore();
-                
+        
+        System.out.println("Attendi il tuo turno...");
         client.clientService.sendMessage(new Message("TURNO", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
         while(risposta.getStatusCode() != 200){
@@ -81,6 +82,7 @@ public class Client {
 
     //Scelta mosse
         Giocatore giocatore2 = null;
+        System.out.println("E' il tuo turno!");
         giocata(giocatore, giocatore2, input, out, in, client);
         
         if(giocatore2 != null){
@@ -115,9 +117,9 @@ public class Client {
     //Richiesta se ho vinto o no
         client.clientService.sendMessage(new Message("VITTORIA", playerId, null));
         risposta = (Message) client.clientService.recieveMessage();
-        if(risposta.getStatusCode() == 210){
-            System.out.println("Hai vinto");
-        } else if(risposta.getStatusCode() == 211)
+        if(risposta.getStatusCode() == 211){
+            System.out.println("Hai vinto: " + (Integer) risposta.getOggetto());
+        } else if(risposta.getStatusCode() == 209)
             System.out.println("Hai perso");
         else 
             System.out.println("Pareggio");
@@ -126,8 +128,10 @@ public class Client {
     //Richiesta dello stato della partita
         client.clientService.sendMessage(new Message("STATO", playerId, statoPartita));
         risposta = (Message) client.clientService.recieveMessage();
-        if(risposta.getStatusCode() == 200)
-            System.out.println(((Stato) risposta.getOggetto()).toString());
+        if(risposta.getStatusCode() == 200){
+            statoPartita = (Stato) risposta.getOggetto();
+            System.out.println(statoPartita.toString());
+        }
         else   
             System.out.println("Errore");
 
@@ -156,12 +160,20 @@ public class Client {
                     if(risposta.getStatusCode() == 200){  //Controllo se la richiesta è andata a buon fine
                         if(risposta.getOggetto() instanceof Carta){
                             giocatore.getMano().add((Carta) risposta.getOggetto());  //Aggiungo alla mia mano la carta che mi ha dato il server
+
                             client.clientService.sendMessage(new Message("PUNTEGGIO", giocatore.getPlayerId(), null));
-                            
                             Message rispostaPunteggio = (Message) client.clientService.recieveMessage();
                             Integer punteggio = (Integer) rispostaPunteggio.getOggetto();
                             if(punteggio >= 21)  //Se ho 21 o ho sballato 'sto' in automatico
                                 giocatore.stay();
+                            
+                            // client.clientService.sendMessage(new Message("STATO", giocatore.getPlayerId(), null));
+                            // Message rispostaStato = (Message) client.clientService.recieveMessage();
+                            // Stato statoPartita = (Stato) rispostaStato.getOggetto();
+                
+                            // if(statoPartita.getPunteggi().get(giocatore.getPlayerId()) >= 21){
+                            //     giocatore.stay();
+                            // }
                         }
                     }
                     break;
@@ -218,6 +230,12 @@ public class Client {
                     System.out.println("Azione non consentita\n");
                 }
             }
+
+            client.clientService.sendMessage(new Message("STATO", giocatore.getPlayerId(), null));
+            Message rispostaStato = (Message) client.clientService.recieveMessage();
+            Stato statoPartita = (Stato) rispostaStato.getOggetto();
+
+            giocatore = statoPartita.getGiocatore(giocatore.getPlayerId());
             
             System.out.println("\nTua mano: \n" + giocatore.getMano().toString());  //Stampa mano           
         }

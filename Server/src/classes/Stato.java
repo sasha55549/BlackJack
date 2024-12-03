@@ -20,6 +20,13 @@ public class Stato implements Serializable {
         this.punteggi=punteggi;
     }
 
+    public Giocatore getGiocatore(String playerId){
+        for(Giocatore g : giocatori){
+            if(g.getPlayerId() == playerId) 
+                return g;
+        }
+        return null;
+    }
 
     public ArrayList<Giocatore> getGiocatori() {
         return this.giocatori;
@@ -55,7 +62,7 @@ public class Stato implements Serializable {
                            " punteggio: " + punteggi.get(giocatore.getPlayerId()) +"\n";
         }
 
-        stringStato += "Mano dealer: " + dealerMano.toString();
+        stringStato += "Mano dealer: " + dealerMano.toString() + " punteggio: " + punteggi.get("D1");
 
         return stringStato;
     }
