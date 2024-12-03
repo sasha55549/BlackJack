@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 //TODO invio puntata
 //TODO gestione FINE
 //TODO richiesta VITTORIA 
-//TODO oscuramento ultima carta dealer
 //TODO insurance aggiunto a giocatore
 
 public class Client {
@@ -75,8 +74,16 @@ public class Client {
         Giocatore giocatore2 = null;
         giocata(giocatore, giocatore2, input, out, in, client);
         
-        if(giocatore2 != null)
+        if(giocatore2 != null){
+            client.clientService.sendMessage(new Message("TURNO", giocatore2.getPlayerId(), null));
             giocata(giocatore2, null, input, out, in, client);
+        }
+
+        client.clientService.sendMessage(new Message("FINE", playerId, null));
+        risposta = (Message) client.clientService.recieveMessage();
+        if(risposta.getStatusCode() != 200){
+            System.out.println("Errore inviato dal server");
+        }
 
     //Richiesta se ho vinto o no
         client.clientService.sendMessage(new Message("VITTORIA", playerId, null));
