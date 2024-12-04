@@ -18,6 +18,9 @@ public class ClientController {
         if(clients.size()>=2) {
             System.out.println("Game starting");
             new PartitaController(clients, inList, outList).start();
+            clients.clear();
+            inList.clear();
+            outList.clear();
             return true;
         }
         return false;

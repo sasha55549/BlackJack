@@ -24,7 +24,7 @@ public class PartitaController extends Thread {
     private HashMap<Giocatore,ClientCommunicationService> connections;
     private String currentPlayer;
     private Iterator<Giocatore> i;
-    static int playersNumber = 0;
+    private int playersNumber = 0;
     @SuppressWarnings("unused")
     private ArrayList<ObjectInputStream> inList;
     @SuppressWarnings("unused")
