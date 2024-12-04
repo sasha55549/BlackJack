@@ -25,7 +25,9 @@ public class PartitaController extends Thread {
     private String currentPlayer;
     private Iterator<Giocatore> i;
     static int playersNumber = 0;
+    @SuppressWarnings("unused")
     private ArrayList<ObjectInputStream> inList;
+    @SuppressWarnings("unused")
     private ArrayList<ObjectOutputStream> outList;
     private ArrayList<Socket> sockets;
     private boolean fine;
@@ -49,7 +51,7 @@ public class PartitaController extends Thread {
             Giocatore giocatore = new Giocatore("P"+Integer.toString(++playersNumber), 1000,0, new Mano(), false);
             this.giocatori.add(giocatore);
             this.giocatori2.put("P"+Integer.toString(playersNumber), giocatore);
-            this.connections.put(giocatore, new ClientCommunicationService(this, socket, true, giocatore, dealer, inList.get(count), outList.get(count)));
+            this.connections.put(giocatore, new ClientCommunicationService(this, socket, true, giocatore, inList.get(count), outList.get(count)));
             this.punteggi.put("P"+Integer.toString(playersNumber), 0);
             count++;
         }
@@ -165,6 +167,7 @@ public class PartitaController extends Thread {
         return currentPlayer;
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized Message turno(Message message) {
         String method = message.getMethod();
         Giocatore giocatore = giocatori2.get(message.getPlayerId());
@@ -226,7 +229,7 @@ public class PartitaController extends Thread {
                     Giocatore split = giocatore.split();
                     giocatori.add(giocatori.indexOf(giocatore)+1, split);
                     giocatori2.put(split.getPlayerId(), split);
-                    connections.put(split, new ClientCommunicationService(this, sockets.get(giocatori.indexOf(giocatore)), true, split, dealer, connections.get(giocatore).getIn(), connections.get(giocatore).getOut()));
+                    connections.put(split, new ClientCommunicationService(this, sockets.get(giocatori.indexOf(giocatore)), true, split, connections.get(giocatore).getIn(), connections.get(giocatore).getOut()));
                     giocatore.hit(mazzo.remove(0));
                     split.hit(mazzo.remove(0));
                     calcolaPunteggi();

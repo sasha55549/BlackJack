@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import classes.Dealer;
 import classes.Giocatore;
 import classes.Message;
 import controllers.PartitaController;
@@ -17,17 +16,15 @@ public class ClientCommunicationService extends Thread{
     //private boolean turno;
     private boolean iniziata;
     private Giocatore giocatore;
-    private Dealer dealer;
     private Message messaggioImportante;
 
     public ClientCommunicationService() {
 
     }
-    public ClientCommunicationService(PartitaController partita, Socket socket, boolean iniziata, Giocatore giocatore, Dealer dealer, ObjectInputStream in, ObjectOutputStream out) {
+    public ClientCommunicationService(PartitaController partita, Socket socket, boolean iniziata, Giocatore giocatore, ObjectInputStream in, ObjectOutputStream out) {
         this.partita = partita;
         this.clientService = new ClientService(socket, in, out);
         this.giocatore = giocatore;
-        this.dealer = dealer;
         //this.turno = turno;
         this.iniziata = iniziata;
         this.in = in;
